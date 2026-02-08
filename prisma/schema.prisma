@@ -72,21 +72,26 @@ model Appointment {
   clientId  String
   client    User     @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
   
-  adminId   String
-  admin     User     @relation("AdminAppointments", fields: [adminId], references: [id])
+  adminId   String?  // Nullable - not set until admin approves/creates
+  admin     User?    @relation("AdminAppointments", fields: [adminId], references: [id])
   
   dateTime  DateTime
   duration  Int      @default(60) // Duration in minutes
   
   // Status tracking
-  status    AppointmentStatus @default(SCHEDULED)
+  status    AppointmentStatus @default(PENDING_APPROVAL)
+  
+  // Booking metadata
+  bookedBy  BookedBy  // Track if client self-booked or admin created
   
   // Communication
   whatsappNotificationSent Boolean @default(false)
   whatsappReminderSent     Boolean @default(false)
   
   // Notes
-  notes     String?  // Admin notes about the session
+  notes           String?  // Admin notes about the session
+  clientNotes     String?  // Client's notes when booking (reason, preferences, etc.)
+  rejectionReason String?  // If admin rejects, optional reason
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -98,9 +103,15 @@ model Appointment {
 }
 
 enum AppointmentStatus {
-  SCHEDULED
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-  NO_SHOW
+  PENDING_APPROVAL  // Client booked, waiting for admin approval
+  CONFIRMED         // Admin approved (or admin created directly)
+  COMPLETED         // Session finished
+  CANCELLED         // Cancelled by either party
+  REJECTED          // Admin declined the booking request
+  NO_SHOW           // Client didn't show up
+}
+
+enum BookedBy {
+  CLIENT  // Client self-booked (needs approval)
+  ADMIN   // Admin created directly (auto-confirmed)
 }
