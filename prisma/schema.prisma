@@ -1,0 +1,106 @@
+// Personal Training Client Management System
+// Database Schema - MVP Phase
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User accounts (both admin and clients)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Will be hashed with bcrypt
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  clientProfile     ClientProfile?
+  appointmentsAsClient Appointment[] @relation("ClientAppointments")
+  appointmentsAsAdmin  Appointment[] @relation("AdminAppointments")
+
+  @@index([email])
+  @@index([role])
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+// Client profile data (extended info for clients)
+model ClientProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  fullName          String
+  phone             String
+  dateOfBirth       DateTime?
+  emergencyContact  String?
+  emergencyPhone    String?
+
+  // Fitness Profile (to be expanded based on your intake form)
+  fitnessGoals      String?   // Text field for goals
+  medicalHistory    String?   // Any relevant medical info
+  injuries          String?   // Current or past injuries
+  activityLevel     String?   // Beginner, Intermediate, Advanced
+  
+  // Measurements (optional, can be tracked over time later)
+  currentWeight     Float?
+  targetWeight      Float?
+  height            Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([fullName])
+}
+
+// Appointment/Session scheduling
+model Appointment {
+  id        String   @id @default(cuid())
+  
+  // Who and when
+  clientId  String
+  client    User     @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
+  
+  adminId   String
+  admin     User     @relation("AdminAppointments", fields: [adminId], references: [id])
+  
+  dateTime  DateTime
+  duration  Int      @default(60) // Duration in minutes
+  
+  // Status tracking
+  status    AppointmentStatus @default(SCHEDULED)
+  
+  // Communication
+  whatsappNotificationSent Boolean @default(false)
+  whatsappReminderSent     Boolean @default(false)
+  
+  // Notes
+  notes     String?  // Admin notes about the session
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([adminId])
+  @@index([dateTime])
+  @@index([status])
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
