@@ -1,6 +1,7 @@
 import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
 
 export default async function ClientDashboard() {
   const session = await auth()
@@ -19,19 +20,27 @@ export default async function ClientDashboard() {
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">Ascending Fitness</h1>
-          <form
-            action={async () => {
-              'use server'
-              await signOut()
-            }}
-          >
-            <button
-              type="submit"
-              className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
+          <div className="flex gap-4 items-center">
+            <Link
+              href="/client/profile"
+              className="hover:text-[#E8DCC4] transition-colors"
             >
-              Logout
-            </button>
-          </form>
+              My Profile
+            </Link>
+            <form
+              action={async () => {
+                'use server'
+                await signOut()
+              }}
+            >
+              <button
+                type="submit"
+                className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
+              >
+                Logout
+              </button>
+            </form>
+          </div>
         </div>
       </nav>
 
@@ -46,17 +55,17 @@ export default async function ClientDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/client/profile" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">My Profile</h3>
             <p className="text-gray-600 mb-4">
               {profile?.fullName || 'Not set'}<br />
               {profile?.phone || 'No phone'}<br />
               {session.user.email}
             </p>
-            <button className="text-[#1A2332] font-medium hover:underline">
-              Edit Profile → (Coming in Phase 4)
-            </button>
-          </div>
+            <span className="text-[#1A2332] font-medium hover:underline">
+              View/Edit Profile →
+            </span>
+          </Link>
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>

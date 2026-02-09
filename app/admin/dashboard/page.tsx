@@ -1,5 +1,7 @@
 import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
 
 export default async function AdminDashboard() {
   const session = await auth()
@@ -8,24 +10,37 @@ export default async function AdminDashboard() {
     redirect('/login')
   }
 
+  // Get client count
+  const clientCount = await prisma.user.count({
+    where: { role: 'CLIENT' },
+  })
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">Ascending Fitness - Admin</h1>
-          <form
-            action={async () => {
-              'use server'
-              await signOut()
-            }}
-          >
-            <button
-              type="submit"
-              className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
+          <div className="flex gap-4 items-center">
+            <Link
+              href="/admin/clients"
+              className="hover:text-[#E8DCC4] transition-colors"
             >
-              Logout
-            </button>
-          </form>
+              Clients
+            </Link>
+            <form
+              action={async () => {
+                'use server'
+                await signOut()
+              }}
+            >
+              <button
+                type="submit"
+                className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
+              >
+                Logout
+              </button>
+            </form>
+          </div>
         </div>
       </nav>
 
@@ -40,11 +55,11 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/clients" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Clients</h3>
-            <p className="text-4xl font-bold text-[#1A2332]">0</p>
-            <p className="text-sm text-gray-500 mt-2">Coming in Phase 3</p>
-          </div>
+            <p className="text-4xl font-bold text-[#1A2332]">{clientCount}</p>
+            <p className="text-sm text-[#E8DCC4] mt-2 font-medium">View All →</p>
+          </Link>
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Pending Approvals</h3>
