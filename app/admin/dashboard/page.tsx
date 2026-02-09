@@ -1,6 +1,7 @@
 import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 
 export default async function AdminDashboard() {
@@ -36,7 +37,10 @@ export default async function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
+          <div className="flex items-center gap-3">
+            <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
+            <h1 className="text-xl font-bold">Ascending Fitness <span className="text-[#E8DCC4] text-sm">— Admin</span></h1>
+          </div>
           <div className="flex gap-4 items-center">
             <Link
               href="/admin/clients"
@@ -69,11 +73,11 @@ export default async function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-2xl font-bold text-[#1A2332] mb-2">
-            Welcome, Coach! 👋
+          <h2 className="text-2xl font-bold text-[#1A2332] mb-2 flex items-center gap-2">
+            Welcome, Coach! 💪
           </h2>
           <p className="text-gray-600">
-            Logged in as: <span className="font-medium">{session.user.email}</span>
+            Ready to help your clients crush their goals today
           </p>
         </div>
 

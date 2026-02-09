@@ -24,10 +24,11 @@ interface CalendarEvent {
 interface CalendarProps {
   appointments: any[]
   onSelectEvent?: (event: CalendarEvent) => void
+  onSelectSlot?: (slotInfo: { start: Date; end: Date }) => void
   isAdmin?: boolean
 }
 
-export default function Calendar({ appointments, onSelectEvent, isAdmin = false }: CalendarProps) {
+export default function Calendar({ appointments, onSelectEvent, onSelectSlot, isAdmin = false }: CalendarProps) {
   const [view, setView] = useState<'month' | 'week' | 'day'>('month')
 
   // Convert appointments to calendar events
@@ -179,6 +180,8 @@ export default function Calendar({ appointments, onSelectEvent, isAdmin = false 
         onView={(newView) => setView(newView as 'month' | 'week' | 'day')}
         views={['month', 'week', 'day']}
         onSelectEvent={onSelectEvent}
+        onSelectSlot={onSelectSlot}
+        selectable={isAdmin && !!onSelectSlot}
         eventPropGetter={eventStyleGetter}
         popup
         style={{ height: '100%' }}

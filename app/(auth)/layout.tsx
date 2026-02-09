@@ -11,11 +11,11 @@ export default function AuthLayout({
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image
-            src="/branding/logo.jpg"
+            src="/logo.jpg"
             alt="Ascending Fitness"
-            width={200}
-            height={200}
-            className="w-48 h-auto"
+            width={240}
+            height={240}
+            className="w-60 h-auto"
             priority
           />
         </div>
