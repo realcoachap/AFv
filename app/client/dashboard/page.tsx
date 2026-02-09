@@ -2,6 +2,7 @@ import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function ClientDashboard() {
   const session = await auth()
@@ -26,21 +27,30 @@ export default async function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
+      <nav className="bg-[#1A2332] text-white p-3 sm:p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-          <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
+            <h1 className="hidden sm:block text-xl font-bold">Ascending Fitness</h1>
+          </div>
+          <div className="flex gap-3 sm:gap-4 items-center text-sm sm:text-base">
             <Link
               href="/client/profile"
               className="hover:text-[#E8DCC4] transition-colors"
             >
-              My Profile
+              Profile
             </Link>
             <Link
               href="/client/schedule"
               className="hover:text-[#E8DCC4] transition-colors"
             >
               Schedule
+            </Link>
+            <Link
+              href="/client/calculator"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Calculator
             </Link>
             <form
               action={async () => {
@@ -69,44 +79,36 @@ export default async function ClientDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Link href="/client/profile" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">My Profile</h3>
-            <p className="text-gray-600 mb-4">
-              {profile?.fullName || 'Not set'}<br />
-              {profile?.phone || 'No phone'}<br />
-              {session.user.email}
+            <p className="text-gray-600 mb-4 text-sm">
+              {profile?.fullName || 'Complete your profile'}
             </p>
-            <span className="text-[#1A2332] font-medium hover:underline">
+            <span className="text-[#E8DCC4] font-medium text-sm">
               View/Edit Profile →
             </span>
           </Link>
 
           <Link href="/client/schedule" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>
-            <p className="text-4xl font-bold text-[#1A2332]">{upcomingCount}</p>
+            <p className="text-4xl font-bold text-[#10B981]">{upcomingCount}</p>
             <p className="text-sm text-gray-500 mt-2">
-              {upcomingCount === 0 ? 'No sessions scheduled' : `${upcomingCount} session${upcomingCount !== 1 ? 's' : ''} coming up`}
+              {upcomingCount === 0 ? 'Book your first session' : 'sessions coming up'}
             </p>
-            <span className="mt-4 inline-block text-[#1A2332] font-medium hover:underline">
+            <span className="mt-4 inline-block text-[#E8DCC4] font-medium text-sm">
               View Schedule →
             </span>
           </Link>
-        </div>
 
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
-          <h3 className="text-lg font-semibold text-green-900 mb-2">
-            🎉 Welcome to Ascending Fitness!
-          </h3>
-          <p className="text-green-800 mb-4">
-            Your account has been created successfully. You're logged in!
-          </p>
-          <ul className="list-disc list-inside text-green-700 space-y-1">
-            <li>✅ Account registered</li>
-            <li>✅ Logged in successfully</li>
-            <li>⏳ Complete your profile (coming soon)</li>
-            <li>⏳ Book your first session (coming soon)</li>
-          </ul>
+          <Link href="/client/calculator" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Calorie Calculator</h3>
+            <p className="text-4xl font-bold text-[#6366F1]">🔢</p>
+            <p className="text-sm text-gray-500 mt-2">Calculate your macros</p>
+            <span className="mt-4 inline-block text-[#E8DCC4] font-medium text-sm">
+              Calculate Now →
+            </span>
+          </Link>
         </div>
       </main>
     </div>
