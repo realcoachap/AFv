@@ -48,7 +48,7 @@ export default async function ClientRPGPage() {
       <VersionFooter />
       
       {/* Navigation */}
-      <NavBar />
+      <NavBar role="client" backLink="/client/dashboard" backText="← Back to Dashboard" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto p-6 space-y-8">
