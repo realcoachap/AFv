@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import Calendar from '@/app/components/schedule/Calendar'
 import NavBar from '@/app/components/NavBar'
+import ClientQuickBookModal from '@/app/components/schedule/ClientQuickBookModal'
 
 interface Appointment {
   id: string
@@ -22,6 +23,8 @@ export default function ClientSchedulePage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [view, setView] = useState<'calendar' | 'list'>('calendar')
   const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null)
+  const [quickBookModalOpen, setQuickBookModalOpen] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   useEffect(() => {
     loadSchedule()
@@ -118,14 +121,43 @@ export default function ClientSchedulePage() {
 
           {/* Calendar View */}
           {view === 'calendar' && (
-            <Calendar
-              appointments={appointments}
-              onSelectEvent={(event) => {
-                const apt = appointments.find((a) => a.id === event.id)
-                setSelectedEvent(apt || null)
-              }}
-              isAdmin={false}
-            />
+            <>
+              <div className="mb-3 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs sm:text-sm text-blue-800">
+                  💡 <span className="sm:hidden">Tap empty slot or use </span>
+                  <span className="hidden sm:inline">Click any empty slot to request a session! </span>
+                  <span className="sm:hidden font-semibold">+ button to request</span>
+                  <span className="hidden sm:inline">Your trainer will confirm.</span>
+                </p>
+              </div>
+              <div className="relative">
+                <Calendar
+                  appointments={appointments}
+                  onSelectEvent={(event) => {
+                    const apt = appointments.find((a) => a.id === event.id)
+                    setSelectedEvent(apt || null)
+                  }}
+                  onSelectSlot={(slotInfo) => {
+                    setSelectedSlot(slotInfo)
+                    setQuickBookModalOpen(true)
+                  }}
+                  isAdmin={false}
+                />
+                {/* Mobile Quick Add Button */}
+                <button
+                  onClick={() => {
+                    // Open modal with current date/time
+                    const now = new Date()
+                    setSelectedSlot({ start: now, end: new Date(now.getTime() + 60 * 60000) })
+                    setQuickBookModalOpen(true)
+                  }}
+                  className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#E8DCC4] text-[#1A2332] rounded-full shadow-lg flex items-center justify-center text-2xl font-bold hover:bg-[#D8CCA4] active:scale-95 transition-all z-50"
+                  aria-label="Quick request session"
+                >
+                  +
+                </button>
+              </div>
+            </>
           )}
 
           {/* List View */}
@@ -160,6 +192,22 @@ export default function ClientSchedulePage() {
               />
             </div>
           </div>
+        )}
+
+        {/* Quick Book Modal */}
+        {selectedSlot && (
+          <ClientQuickBookModal
+            isOpen={quickBookModalOpen}
+            onClose={() => {
+              setQuickBookModalOpen(false)
+              setSelectedSlot(null)
+            }}
+            slotStart={selectedSlot.start}
+            slotEnd={selectedSlot.end}
+            onSuccess={() => {
+              loadSchedule()
+            }}
+          />
         )}
       </main>
     </div>
