@@ -85,7 +85,7 @@ export default function ClientSchedulePage() {
 
       <main className="max-w-6xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
             <div>
               <h2 className="text-2xl font-bold text-[#1A2332]">My Schedule</h2>
               <p className="text-gray-600 mt-1">
@@ -93,8 +93,17 @@ export default function ClientSchedulePage() {
               </p>
             </div>
             
-            {/* View Toggle */}
-            <div className="flex gap-2 border border-gray-300 rounded-lg overflow-hidden">
+            <div className="flex gap-3">
+              {/* Book Session Button */}
+              <Link
+                href="/client/schedule/book"
+                className="px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] transition-colors"
+              >
+                + Book Session
+              </Link>
+              
+              {/* View Toggle */}
+              <div className="flex gap-2 border border-gray-300 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView('calendar')}
                 className={`px-4 py-2 font-medium transition-colors ${
@@ -115,6 +124,7 @@ export default function ClientSchedulePage() {
               >
                 📋 List
               </button>
+            </div>
             </div>
           </div>
 
