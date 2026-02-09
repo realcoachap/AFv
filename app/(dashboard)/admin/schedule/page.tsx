@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { format, parseISO, isFuture, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import Calendar from '@/app/components/schedule/Calendar'
 
 interface Client {
   id: string
@@ -37,8 +38,9 @@ export default function AdminSchedulePage() {
   const [loading, setLoading] = useState(true)
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
-  const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('upcoming')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [view, setView] = useState<'calendar' | 'list'>('calendar')
+  const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null)
+  const [sendingReminder, setSendingReminder] = useState(false)
 
   useEffect(() => {
     loadSchedule()
@@ -81,24 +83,37 @@ export default function AdminSchedulePage() {
       if (response.ok) {
         loadSchedule()
         loadStats()
+        setSelectedEvent(null)
       }
     } catch (error) {
       console.error('Failed to update status:', error)
     }
   }
 
-  const filteredAppointments = appointments.filter((apt) => {
-    const aptDate = parseISO(apt.dateTime)
-    
-    // Time filter
-    if (filter === 'upcoming' && !isFuture(aptDate)) return false
-    if (filter === 'past' && isFuture(aptDate)) return false
-    
-    // Status filter
-    if (statusFilter !== 'all' && apt.status !== statusFilter) return false
-    
-    return true
-  })
+  async function sendReminder(appointmentId: string, reminderType: string) {
+    setSendingReminder(true)
+    try {
+      const response = await fetch('/api/reminders/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointmentId, reminderType }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        alert(`✅ Reminder prepared!\n\nTo: ${data.phone}\nMessage: ${data.message}`)
+        // TODO: Integrate with actual WhatsApp sending
+      } else {
+        const data = await response.json()
+        alert(`❌ Error: ${data.error}`)
+      }
+    } catch (error) {
+      console.error('Failed to send reminder:', error)
+      alert('❌ Failed to send reminder')
+    } finally {
+      setSendingReminder(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -148,83 +163,97 @@ export default function AdminSchedulePage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-[#1A2332]">Schedule Management</h2>
-            <Link
-              href="/admin/schedule/new"
-              className="px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] transition-colors"
-            >
-              + New Session
-            </Link>
+            <div className="flex gap-4">
+              {/* View Toggle */}
+              <div className="flex gap-2 border border-gray-300 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setView('calendar')}
+                  className={`px-4 py-2 font-medium transition-colors ${
+                    view === 'calendar'
+                      ? 'bg-[#E8DCC4] text-[#1A2332]'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  📅 Calendar
+                </button>
+                <button
+                  onClick={() => setView('list')}
+                  className={`px-4 py-2 font-medium transition-colors ${
+                    view === 'list'
+                      ? 'bg-[#E8DCC4] text-[#1A2332]'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  📋 List
+                </button>
+              </div>
+              
+              <Link
+                href="/admin/schedule/new"
+                className="px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] transition-colors"
+              >
+                + New Session
+              </Link>
+            </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-4 mb-6">
-            <div className="flex gap-2 border-b border-gray-200">
-              <button
-                onClick={() => setFilter('upcoming')}
-                className={`px-4 py-2 font-medium transition-colors ${
-                  filter === 'upcoming'
-                    ? 'text-[#1A2332] border-b-2 border-[#E8DCC4]'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Upcoming
-              </button>
-              <button
-                onClick={() => setFilter('past')}
-                className={`px-4 py-2 font-medium transition-colors ${
-                  filter === 'past'
-                    ? 'text-[#1A2332] border-b-2 border-[#E8DCC4]'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Past
-              </button>
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 font-medium transition-colors ${
-                  filter === 'all'
-                    ? 'text-[#1A2332] border-b-2 border-[#E8DCC4]'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                All
-              </button>
-            </div>
+          {/* Calendar View */}
+          {view === 'calendar' && (
+            <Calendar
+              appointments={appointments}
+              onSelectEvent={(event) => {
+                const apt = appointments.find((a) => a.id === event.id)
+                setSelectedEvent(apt || null)
+              }}
+              isAdmin
+            />
+          )}
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4]"
-            >
-              <option value="all">All Statuses</option>
-              <option value="CONFIRMED">Confirmed</option>
-              <option value="PENDING_APPROVAL">Pending</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
-              <option value="NO_SHOW">No Show</option>
-            </select>
-          </div>
-
-          {/* Sessions List */}
-          {filteredAppointments.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No sessions found</p>
-            </div>
-          ) : (
+          {/* List View */}
+          {view === 'list' && (
             <div className="space-y-4">
-              {filteredAppointments.map((apt) => (
-                <AdminSessionCard
-                  key={apt.id}
-                  appointment={apt}
-                  onStatusChange={handleStatusChange}
-                />
-              ))}
+              {appointments.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">No sessions scheduled</p>
+                </div>
+              ) : (
+                appointments.map((apt) => (
+                  <SessionCard
+                    key={apt.id}
+                    appointment={apt}
+                    onStatusChange={handleStatusChange}
+                    onSendReminder={sendReminder}
+                    sendingReminder={sendingReminder}
+                  />
+                ))
+              )}
             </div>
           )}
         </div>
+
+        {/* Selected Event Modal */}
+        {selectedEvent && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => setSelectedEvent(null)}
+          >
+            <div
+              className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <SessionDetail
+                appointment={selectedEvent}
+                onClose={() => setSelectedEvent(null)}
+                onStatusChange={handleStatusChange}
+                onSendReminder={sendReminder}
+                sendingReminder={sendingReminder}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
@@ -259,15 +288,19 @@ function StatCard({
   )
 }
 
-function AdminSessionCard({
+function SessionCard({
   appointment,
   onStatusChange,
+  onSendReminder,
+  sendingReminder,
 }: {
   appointment: Appointment
   onStatusChange: (id: string, status: string) => void
+  onSendReminder: (id: string, type: string) => void
+  sendingReminder: boolean
 }) {
   const aptDate = parseISO(appointment.dateTime)
-  const isUpcoming = isFuture(aptDate)
+  const isUpcoming = aptDate > new Date()
 
   const statusColors: Record<string, string> = {
     CONFIRMED: 'bg-green-100 text-green-800',
@@ -334,58 +367,22 @@ function AdminSessionCard({
         )}
       </div>
 
-      {(appointment.notes || appointment.clientNotes) && (
-        <div className="mt-3 pt-3 border-t border-gray-200 space-y-2 text-sm">
-          {appointment.clientNotes && (
-            <p className="text-gray-600">
-              <span className="font-medium">Client Notes:</span> {appointment.clientNotes}
-            </p>
-          )}
-          {appointment.notes && (
-            <p className="text-gray-600">
-              <span className="font-medium">Coach Notes:</span> {appointment.notes}
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Quick Actions */}
       <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-        {appointment.status === 'PENDING_APPROVAL' && (
-          <>
-            <button
-              onClick={() => onStatusChange(appointment.id, 'CONFIRMED')}
-              className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => onStatusChange(appointment.id, 'CANCELLED')}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-            >
-              Decline
-            </button>
-          </>
-        )}
         {appointment.status === 'CONFIRMED' && isUpcoming && (
           <>
             <button
+              onClick={() => onSendReminder(appointment.id, 'general')}
+              disabled={sendingReminder}
+              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+            >
+              📱 Send Reminder
+            </button>
+            <button
               onClick={() => onStatusChange(appointment.id, 'COMPLETED')}
-              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+              className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
             >
-              Mark Completed
-            </button>
-            <button
-              onClick={() => onStatusChange(appointment.id, 'NO_SHOW')}
-              className="px-3 py-1 bg-orange-500 text-white rounded text-sm hover:bg-orange-600"
-            >
-              No Show
-            </button>
-            <button
-              onClick={() => onStatusChange(appointment.id, 'CANCELLED')}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-            >
-              Cancel
+              ✓ Complete
             </button>
           </>
         )}
@@ -394,6 +391,102 @@ function AdminSessionCard({
           className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50"
         >
           Edit
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+function SessionDetail({
+  appointment,
+  onClose,
+  onStatusChange,
+  onSendReminder,
+  sendingReminder,
+}: {
+  appointment: Appointment
+  onClose: () => void
+  onStatusChange: (id: string, status: string) => void
+  onSendReminder: (id: string, type: string) => void
+  sendingReminder: boolean
+}) {
+  const aptDate = parseISO(appointment.dateTime)
+  const isUpcoming = aptDate > new Date()
+
+  const sessionTypeLabels: Record<string, string> = {
+    ONE_ON_ONE: '1-on-1 Training',
+    GROUP: 'Group Session',
+    ASSESSMENT: 'Assessment',
+    CHECK_IN: 'Check-in',
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-xl font-bold text-[#1A2332]">
+          {sessionTypeLabels[appointment.sessionType] || appointment.sessionType}
+        </h3>
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="space-y-3 mb-4">
+        <div>
+          <p className="text-sm text-gray-500">Client</p>
+          <p className="font-semibold">
+            {appointment.client.clientProfile?.fullName || appointment.client.email}
+          </p>
+          {appointment.client.clientProfile?.phone && (
+            <p className="text-sm text-gray-600">{appointment.client.clientProfile.phone}</p>
+          )}
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-500">Date & Time</p>
+          <p className="font-semibold">
+            {format(aptDate, 'EEEE, MMMM d, yyyy')}
+          </p>
+          <p className="text-sm">{format(aptDate, 'h:mm a')} ({appointment.duration} min)</p>
+        </div>
+
+        {appointment.location && (
+          <div>
+            <p className="text-sm text-gray-500">Location</p>
+            <p className="font-semibold">{appointment.location}</p>
+          </div>
+        )}
+
+        {appointment.clientNotes && (
+          <div>
+            <p className="text-sm text-gray-500">Client Notes</p>
+            <p className="text-sm">{appointment.clientNotes}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2 pt-4 border-t">
+        {appointment.status === 'CONFIRMED' && isUpcoming && (
+          <button
+            onClick={() => {
+              onSendReminder(appointment.id, 'general')
+              onClose()
+            }}
+            disabled={sendingReminder}
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+          >
+            📱 Send WhatsApp Reminder
+          </button>
+        )}
+        
+        <Link
+          href={`/admin/schedule/${appointment.id}`}
+          className="w-full px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] text-center"
+        >
+          Edit Session
         </Link>
       </div>
     </div>
