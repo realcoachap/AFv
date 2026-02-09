@@ -151,8 +151,3 @@ export default async function ClientDashboard() {
     </div>
   )
 }
-
-      </main>
-    </div>
-  )
-}
