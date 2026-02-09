@@ -594,22 +594,32 @@ export default function AdminEditClientProfilePage() {
                   }
                   placeholder="e.g., Mon/Wed/Fri at 6pm..."
                 />
-                <Input
-                  label="Sessions per month"
-                  type="number" inputMode="numeric"
-                  step="1"
-                  value={formData.sessionsPerMonth?.toString() || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      sessionsPerMonth: e.target.value
-                        ? parseInt(e.target.value)
-                        : null,
-                    })
-                  }
-                  placeholder="8"
-                  error={validationErrors.sessionsPerMonth}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sessions per month
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="31"
+                    step="1"
+                    value={formData.sessionsPerMonth?.toString() || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        sessionsPerMonth: e.target.value
+                          ? parseInt(e.target.value)
+                          : null,
+                      })
+                    }
+                    placeholder="8"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+                  />
+                  {validationErrors.sessionsPerMonth && (
+                    <p className="text-red-500 text-sm mt-1">{validationErrors.sessionsPerMonth}</p>
+                  )}
+                </div>
               </div>
             </Section>
 
