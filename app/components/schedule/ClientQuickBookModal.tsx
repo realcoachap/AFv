@@ -25,6 +25,7 @@ export default function ClientQuickBookModal({
     sessionType: 'ONE_ON_ONE',
     duration: 60,
     clientNotes: '',
+    time: format(slotStart, 'HH:mm'), // Add time field
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,11 +34,15 @@ export default function ClientQuickBookModal({
     setSaving(true)
 
     try {
+      // Combine date from slotStart with time from formData
+      const dateStr = format(slotStart, 'yyyy-MM-dd')
+      const dateTime = new Date(`${dateStr}T${formData.time}`).toISOString()
+      
       const response = await fetch('/api/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dateTime: slotStart.toISOString(),
+          dateTime,
           duration: formData.duration,
           sessionType: formData.sessionType,
           clientNotes: formData.clientNotes || undefined,
@@ -71,6 +76,7 @@ export default function ClientQuickBookModal({
       sessionType: 'ONE_ON_ONE',
       duration: 60,
       clientNotes: '',
+      time: format(slotStart, 'HH:mm'),
     })
     setError('')
     onClose()
@@ -97,13 +103,24 @@ export default function ClientQuickBookModal({
           </button>
         </div>
 
-        <div className="mb-4 p-3 bg-[#FFFBF5] border border-[#E8DCC4] rounded">
-          <p className="text-sm text-gray-700">
-            <strong>Date:</strong> {format(slotStart, 'EEEE, MMM d, yyyy')}
-          </p>
-          <p className="text-sm text-gray-700">
-            <strong>Time:</strong> {format(slotStart, 'h:mm a')}
-          </p>
+        <div className="mb-4 space-y-3">
+          <div className="p-3 bg-[#FFFBF5] border border-[#E8DCC4] rounded">
+            <p className="text-sm text-gray-700">
+              <strong>Date:</strong> {format(slotStart, 'EEEE, MMM d, yyyy')}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Time *
+            </label>
+            <input
+              type="time"
+              value={formData.time}
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent text-sm"
+              required
+            />
+          </div>
         </div>
 
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">

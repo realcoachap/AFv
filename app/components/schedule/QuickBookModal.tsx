@@ -38,6 +38,7 @@ export default function QuickBookModal({
     location: 'LA Fitness',
     notes: '',
     clientNotes: '',
+    time: format(slotStart, 'HH:mm'), // Add time field
   })
 
   useEffect(() => {
@@ -76,12 +77,16 @@ export default function QuickBookModal({
     setSaving(true)
 
     try {
+      // Combine date from slotStart with time from formData
+      const dateStr = format(slotStart, 'yyyy-MM-dd')
+      const dateTime = new Date(`${dateStr}T${formData.time}`).toISOString()
+      
       const response = await fetch('/api/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: formData.clientId,
-          dateTime: slotStart.toISOString(),
+          dateTime,
           duration: formData.duration,
           sessionType: formData.sessionType,
           location: formData.location || undefined,
@@ -121,6 +126,7 @@ export default function QuickBookModal({
       location: 'LA Fitness',
       notes: '',
       clientNotes: '',
+      time: format(slotStart, 'HH:mm'),
     })
     setError('')
     onClose()
@@ -147,13 +153,24 @@ export default function QuickBookModal({
           </button>
         </div>
 
-        <div className="mb-4 p-3 bg-[#FFFBF5] border border-[#E8DCC4] rounded">
-          <p className="text-sm text-gray-700">
-            <strong>Date:</strong> {format(slotStart, 'EEEE, MMM d, yyyy')}
-          </p>
-          <p className="text-sm text-gray-700">
-            <strong>Time:</strong> {format(slotStart, 'h:mm a')}
-          </p>
+        <div className="mb-4 space-y-3">
+          <div className="p-3 bg-[#FFFBF5] border border-[#E8DCC4] rounded">
+            <p className="text-sm text-gray-700">
+              <strong>Date:</strong> {format(slotStart, 'EEEE, MMM d, yyyy')}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Time *
+            </label>
+            <input
+              type="time"
+              value={formData.time}
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent text-sm"
+              required
+            />
+          </div>
         </div>
 
         {error && (
