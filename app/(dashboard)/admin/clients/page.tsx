@@ -105,12 +105,24 @@ export default async function AdminClientsPage({
             <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
             <h1 className="text-xl font-bold">Ascending Fitness <span className="text-[#E8DCC4] text-sm">— Admin</span></h1>
           </Link>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-3 sm:gap-4 items-center text-sm sm:text-base">
             <Link
               href="/admin/dashboard"
               className="hover:text-[#E8DCC4] transition-colors"
             >
               Dashboard
+            </Link>
+            <Link
+              href="/admin/schedule"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Schedule
+            </Link>
+            <Link
+              href="/admin/calculator"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Calculator
             </Link>
             <form
               action={async () => {
