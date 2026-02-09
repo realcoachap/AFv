@@ -41,7 +41,7 @@ export default async function AdminDashboard() {
             <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
             <h1 className="text-xl font-bold">Ascending Fitness <span className="text-[#E8DCC4] text-sm">— Admin</span></h1>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-3 sm:gap-4 items-center text-sm sm:text-base">
             <Link
               href="/admin/clients"
               className="hover:text-[#E8DCC4] transition-colors"
@@ -53,6 +53,12 @@ export default async function AdminDashboard() {
               className="hover:text-[#E8DCC4] transition-colors"
             >
               Schedule
+            </Link>
+            <Link
+              href="/admin/calculator"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Calculator
             </Link>
             <form
               action={async () => {
@@ -81,7 +87,7 @@ export default async function AdminDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Link href="/admin/clients" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Clients</h3>
             <p className="text-4xl font-bold text-[#1A2332]">{clientCount}</p>
@@ -100,6 +106,12 @@ export default async function AdminDashboard() {
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Today's Sessions</h3>
             <p className="text-4xl font-bold text-[#10B981]">{todaySessions}</p>
             <p className="text-sm text-[#E8DCC4] font-medium mt-2">View Schedule →</p>
+          </Link>
+
+          <Link href="/admin/calculator" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Calorie Calculator</h3>
+            <p className="text-4xl font-bold text-[#6366F1]">🔢</p>
+            <p className="text-sm text-[#E8DCC4] font-medium mt-2">Calculate Macros →</p>
           </Link>
         </div>
 
