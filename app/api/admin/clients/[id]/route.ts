@@ -6,7 +6,7 @@ import { z } from 'zod'
 // GET /api/admin/clients/[id] - Get specific client (admin only)
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -18,8 +18,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
+
     const client = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         clientProfile: true,
       },
@@ -42,7 +44,6 @@ export async function GET(
   }
 }
 
-// PUT /api/admin/clients/[id] - Update client profile (admin only)
 const profileUpdateSchema = z.object({
   fullName: z.string().optional(),
   phone: z.string().optional(),
@@ -82,7 +83,7 @@ const profileUpdateSchema = z.object({
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -94,12 +95,13 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     const body = await request.json()
     const validatedData = profileUpdateSchema.parse(body)
 
     // Check if client exists
     const client = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { clientProfile: true },
     })
 
@@ -112,7 +114,7 @@ export async function PUT(
 
     // Update profile
     const updatedProfile = await prisma.clientProfile.update({
-      where: { userId: params.id },
+      where: { userId: id },
       data: validatedData,
     })
 

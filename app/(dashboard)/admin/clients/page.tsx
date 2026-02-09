@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default async function AdminClientsPage({
   searchParams,
 }: {
-  searchParams: { search?: string }
+  searchParams: Promise<{ search?: string }>
 }) {
   const session = await auth()
 
@@ -14,7 +14,8 @@ export default async function AdminClientsPage({
   }
 
   // Fetch clients
-  const searchQuery = searchParams.search || ''
+  const params = await searchParams
+  const searchQuery = params.search || ''
   const response = await fetch(
     `${process.env.NEXTAUTH_URL}/api/admin/clients?search=${searchQuery}`,
     {
