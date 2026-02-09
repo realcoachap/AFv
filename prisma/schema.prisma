@@ -20,9 +20,13 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  clientProfile     ClientProfile?
+  clientProfile        ClientProfile?
   appointmentsAsClient Appointment[] @relation("ClientAppointments")
   appointmentsAsAdmin  Appointment[] @relation("AdminAppointments")
+  rpgCharacter         RPGCharacter?
+  rpgUserQuests        RPGUserQuest[]
+  rpgUserAchievements  RPGUserAchievement[]
+  rpgXPLogs            RPGXPLog[]
 
   @@index([email])
   @@index([role])
@@ -160,4 +164,202 @@ enum SessionType {
   GROUP           // Group training class
   ASSESSMENT      // Initial assessment / consultation
   CHECK_IN        // Progress check-in / weigh-in
+}
+
+// ========================================
+// RPG GAMIFICATION SYSTEM
+// ========================================
+
+// RPG Character (one per client user)
+model RPGCharacter {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Progression
+  level     Int      @default(1)
+  xp        Int      @default(0)
+  
+  // Stats (0-100 scale)
+  strength    Int    @default(0)  // Grows with strength training
+  endurance   Int    @default(0)  // Grows with cardio/endurance work
+  discipline  Int    @default(0)  // Grows with consistency/streaks
+  
+  // Streaks
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastWorkoutDate DateTime?
+  
+  // Avatar customization (JSON config)
+  avatarConfig    Json     @default("{}") // Stores body type, colors, accessories, etc.
+  
+  // Leaderboard visibility
+  publicProfile   Boolean  @default(false) // Opt-in to show name on leaderboard
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([level])
+  @@index([xp])
+}
+
+// Quest templates (reusable quest definitions)
+model RPGQuest {
+  id          String   @id @default(cuid())
+  
+  // Quest details
+  name        String
+  description String
+  type        QuestType
+  
+  // Rewards
+  xpReward    Int      @default(0)
+  
+  // Requirements (JSON for flexibility)
+  // Example: {"type": "complete_sessions", "count": 3}
+  // Example: {"type": "maintain_streak", "days": 7}
+  requirements Json
+  
+  // Repeatability
+  repeatable  Boolean  @default(true)  // Can be completed multiple times
+  
+  // Availability
+  active      Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userQuests  RPGUserQuest[]
+
+  @@index([type])
+  @@index([active])
+}
+
+enum QuestType {
+  DAILY       // Refreshes daily
+  WEEKLY      // Refreshes weekly (Monday)
+  MONTHLY     // Refreshes monthly
+  PERSONAL    // Admin-created for specific client
+}
+
+// User's active/completed quests
+model RPGUserQuest {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  questId   String
+  quest     RPGQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  
+  // Progress tracking (JSON for flexibility)
+  // Example: {"sessions_completed": 2, "target": 3}
+  progress  Json     @default("{}")
+  
+  // Completion
+  completed Boolean  @default(false)
+  completedAt DateTime?
+  
+  // Assignment date (for tracking weekly/daily resets)
+  assignedAt DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([questId])
+  @@index([completed])
+  @@index([assignedAt])
+}
+
+// Achievement definitions
+model RPGAchievement {
+  id          String   @id @default(cuid())
+  
+  name        String
+  description String
+  category    AchievementCategory
+  
+  // Badge display
+  badgeIcon   String   // Icon identifier (emoji or image path)
+  badgeColor  String   @default("#FFD700") // Hex color
+  
+  // Unlock criteria (JSON for flexibility)
+  // Example: {"type": "reach_level", "level": 10}
+  // Example: {"type": "streak_days", "days": 30}
+  unlockCriteria Json
+  
+  // Rarity
+  rarity      AchievementRarity @default(COMMON)
+  
+  active      Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userAchievements RPGUserAchievement[]
+
+  @@index([category])
+  @@index([rarity])
+  @@index([active])
+}
+
+enum AchievementCategory {
+  MILESTONE    // Level/session milestones
+  STREAK       // Consistency achievements
+  STRENGTH     // Strength-based PRs
+  ENDURANCE    // Cardio/endurance achievements
+  SOCIAL       // Referrals, community
+  SPECIAL      // Limited-time, unique
+}
+
+enum AchievementRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+// User's unlocked achievements
+model RPGUserAchievement {
+  id            String   @id @default(cuid())
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  achievementId String
+  achievement   RPGAchievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  unlockedAt    DateTime @default(now())
+
+  @@unique([userId, achievementId]) // Can't unlock same achievement twice
+  @@index([userId])
+  @@index([achievementId])
+}
+
+// XP transaction log (for transparency and debugging)
+model RPGXPLog {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount    Int      // XP awarded (can be negative for penalties)
+  source    String   // "session_complete", "quest_complete", "streak_bonus", etc.
+  
+  // Reference to source (session ID, quest ID, etc.)
+  referenceId String?
+  
+  // Optional note
+  note      String?
+  
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
 }
