@@ -78,7 +78,16 @@ export async function GET(req: NextRequest) {
       orderBy: { dateTime: 'asc' },
     })
 
-    return NextResponse.json({ appointments })
+    return NextResponse.json(
+      { appointments },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    )
   } catch (error) {
     console.error('Schedule fetch error:', error)
     return NextResponse.json(

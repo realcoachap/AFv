@@ -28,7 +28,14 @@ export default function ClientSchedulePage() {
 
   async function loadSchedule() {
     try {
-      const response = await fetch('/api/schedule')
+      // Add timestamp to force cache bust
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/schedule?_t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
       if (response.ok) {
         const data = await response.json()
         setAppointments(data.appointments)

@@ -45,8 +45,8 @@ export async function GET(
 }
 
 const profileUpdateSchema = z.object({
-  fullName: z.string().optional(),
-  phone: z.string().optional(),
+  fullName: z.string().min(1).optional().or(z.literal('')),
+  phone: z.string().optional().or(z.literal('')),
   email: z.string().email().optional().or(z.literal('')),
   age: z.number().int().positive().optional().or(z.literal(null)),
   gender: z.string().optional().or(z.literal(null)),
@@ -97,6 +97,10 @@ export async function PUT(
 
     const { id } = await params
     const body = await request.json()
+    
+    console.log('📝 Admin updating client profile:', id)
+    console.log('📱 Phone number in request:', body.phone)
+    
     const validatedData = profileUpdateSchema.parse(body)
 
     // Check if client exists
@@ -112,11 +116,16 @@ export async function PUT(
       )
     }
 
+    console.log('📞 Old phone:', client.clientProfile?.phone)
+    console.log('📞 New phone:', validatedData.phone)
+
     // Update profile
     const updatedProfile = await prisma.clientProfile.update({
       where: { userId: id },
       data: validatedData,
     })
+    
+    console.log('✅ Profile updated, new phone:', updatedProfile.phone)
 
     return NextResponse.json({
       message: 'Profile updated successfully',
