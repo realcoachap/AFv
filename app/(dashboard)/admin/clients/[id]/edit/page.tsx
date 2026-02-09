@@ -520,21 +520,28 @@ export default function AdminEditClientProfilePage() {
                     { value: 'Very Active', label: 'Very Active' },
                   ]}
                 />
-                <Input
-                  label="Sleep hours per night"
-                  type="number"
-                  step="0.5"
-                  value={formData.averageSleepHours?.toString() || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      averageSleepHours: e.target.value
-                        ? parseFloat(e.target.value)
-                        : null,
-                    })
-                  }
-                  placeholder="7.5"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sleep hours per night
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    step="0.5"
+                    value={formData.averageSleepHours?.toString() || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        averageSleepHours: e.target.value
+                          ? parseFloat(e.target.value)
+                          : null,
+                      })
+                    }
+                    placeholder="7.5"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+                  />
+                </div>
                 <Textarea
                   label="Dietary restrictions"
                   value={formData.dietaryRestrictions}
