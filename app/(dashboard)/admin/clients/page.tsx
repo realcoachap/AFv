@@ -100,7 +100,7 @@ export default async function AdminClientsPage({
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Ascending Fitness - Admin</h1>
+          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
           <div className="flex gap-4 items-center">
             <Link
               href="/admin/dashboard"
@@ -194,12 +194,20 @@ export default async function AdminClientsPage({
                         ></div>
                       </div>
                     </div>
-                    <Link
-                      href={`/admin/clients/${client.id}`}
-                      className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded font-semibold hover:bg-[#D8CCA4] transition-colors whitespace-nowrap"
-                    >
-                      View Profile
-                    </Link>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/admin/clients/${client.id}/edit`}
+                        className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/admin/clients/${client.id}`}
+                        className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded font-semibold hover:bg-[#D8CCA4] transition-colors whitespace-nowrap"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

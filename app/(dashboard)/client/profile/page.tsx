@@ -56,7 +56,7 @@ export default async function ClientProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Ascending Fitness</h1>
+          <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
           <div className="flex gap-4 items-center">
             <Link
               href="/client/dashboard"

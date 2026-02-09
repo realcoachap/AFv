@@ -1,20 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import ConditionalField from '@/app/components/profile/ConditionalField'
 import { validateProfile } from '@/app/lib/validations/profile'
 
-export default function EditProfilePage() {
+export default function AdminEditClientProfilePage() {
   const router = useRouter()
+  const params = useParams()
+  const clientId = params.id as string
+
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  const [clientName, setClientName] = useState('')
 
-  // Form state
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -52,14 +55,20 @@ export default function EditProfilePage() {
     sessionsPerMonth: null as number | null,
   })
 
-  // Load profile data
   useEffect(() => {
-    async function loadProfile() {
-      try {
-        const response = await fetch('/api/profile')
-        if (response.ok) {
-          const data = await response.json()
-          const profile = data.profile
+    loadProfile()
+  }, [clientId])
+
+  async function loadProfile() {
+    try {
+      const response = await fetch(`/api/admin/clients/${clientId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const profile = data.client.clientProfile
+        
+        setClientName(profile?.fullName || data.client.email)
+        
+        if (profile) {
           setFormData({
             fullName: profile.fullName || '',
             phone: profile.phone || '',
@@ -97,21 +106,19 @@ export default function EditProfilePage() {
             sessionsPerMonth: profile.sessionsPerMonth,
           })
         }
-      } catch (err) {
-        setError('Failed to load profile')
-      } finally {
-        setLoading(false)
       }
+    } catch (err) {
+      setError('Failed to load profile')
+    } finally {
+      setLoading(false)
     }
-    loadProfile()
-  }, [])
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setValidationErrors({})
     
-    // Client-side validation
     const validation = validateProfile(formData)
     if (!validation.success) {
       setValidationErrors(validation.errors)
@@ -122,7 +129,7 @@ export default function EditProfilePage() {
     setSaving(true)
 
     try {
-      const response = await fetch('/api/profile', {
+      const response = await fetch(`/api/admin/clients/${clientId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -131,7 +138,7 @@ export default function EditProfilePage() {
       if (response.ok) {
         setSuccess(true)
         setTimeout(() => {
-          router.push('/client/profile')
+          router.push('/admin/clients')
         }, 1000)
       } else {
         const data = await response.json()
@@ -160,22 +167,19 @@ export default function EditProfilePage() {
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-          <Link
-            href="/client/profile"
-            className="text-[#E8DCC4] hover:underline"
-          >
-            ← Back to Profile
+          <Link href="/admin/clients" className="text-[#E8DCC4] hover:underline">
+            ← Back to Clients
           </Link>
         </div>
       </nav>
 
       <main className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-2xl font-bold text-[#1A2332] mb-4">
-            Edit Profile
+          <h2 className="text-2xl font-bold text-[#1A2332] mb-2">
+            Edit Client Profile
           </h2>
           <p className="text-gray-600 mb-4">
-            All fields are optional. Fill out what you're comfortable sharing.
+            Editing: {clientName}
           </p>
 
           {error && (
@@ -359,7 +363,7 @@ export default function EditProfilePage() {
                   onDescriptionChange={(val) =>
                     setFormData({ ...formData, medicalConditions: val })
                   }
-                  descriptionPlaceholder="Please describe your medical conditions..."
+                  descriptionPlaceholder="Please describe medical conditions..."
                 />
                 <ConditionalField
                   label="Are you taking any medications?"
@@ -372,7 +376,7 @@ export default function EditProfilePage() {
                   onDescriptionChange={(val) =>
                     setFormData({ ...formData, medications: val })
                   }
-                  descriptionPlaceholder="Please list your medications..."
+                  descriptionPlaceholder="Please list medications..."
                 />
                 <ConditionalField
                   label="Any injuries or past surgeries?"
@@ -383,7 +387,7 @@ export default function EditProfilePage() {
                   onDescriptionChange={(val) =>
                     setFormData({ ...formData, injuriesDescription: val })
                   }
-                  descriptionPlaceholder="Please describe your injuries or surgeries..."
+                  descriptionPlaceholder="Please describe injuries/surgeries..."
                 />
                 <ConditionalField
                   label="Do you have any allergies?"
@@ -396,7 +400,7 @@ export default function EditProfilePage() {
                   onDescriptionChange={(val) =>
                     setFormData({ ...formData, allergies: val })
                   }
-                  descriptionPlaceholder="Please describe your allergies..."
+                  descriptionPlaceholder="Please describe allergies..."
                 />
                 <Select
                   label="Current fitness level"
@@ -414,7 +418,7 @@ export default function EditProfilePage() {
               </div>
             </Section>
 
-            {/* Fitness History */}
+            {/* Fitness History, Goals, Lifestyle, Preferences - Abbreviated for brevity */}
             <Section title="Fitness History">
               <div className="space-y-4">
                 <ConditionalField
@@ -425,7 +429,7 @@ export default function EditProfilePage() {
                   }
                 />
                 <Textarea
-                  label="What types of exercise have you done?"
+                  label="Previous exercise types"
                   value={formData.previousExerciseTypes}
                   onChange={(e) =>
                     setFormData({
@@ -436,7 +440,7 @@ export default function EditProfilePage() {
                   placeholder="e.g., Running, weightlifting, yoga..."
                 />
                 <ConditionalField
-                  label="Do you have workout equipment access at home?"
+                  label="Home equipment access?"
                   value={formData.hasHomeEquipment}
                   onChange={(val) =>
                     setFormData({ ...formData, hasHomeEquipment: val })
@@ -446,12 +450,11 @@ export default function EditProfilePage() {
                   onDescriptionChange={(val) =>
                     setFormData({ ...formData, homeEquipmentTypes: val })
                   }
-                  descriptionPlaceholder="Please describe your equipment..."
+                  descriptionPlaceholder="Describe equipment..."
                 />
               </div>
             </Section>
 
-            {/* Goals */}
             <Section title="Goals">
               <div className="space-y-4">
                 <Textarea
@@ -460,7 +463,7 @@ export default function EditProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, primaryGoal: e.target.value })
                   }
-                  placeholder="e.g., Lose weight, build muscle, improve endurance..."
+                  placeholder="e.g., Lose weight, build muscle..."
                 />
                 <Textarea
                   label="Secondary goals"
@@ -468,7 +471,7 @@ export default function EditProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, secondaryGoals: e.target.value })
                   }
-                  placeholder="Any additional goals..."
+                  placeholder="Additional goals..."
                 />
                 <Input
                   label="Target timeline"
@@ -481,7 +484,6 @@ export default function EditProfilePage() {
               </div>
             </Section>
 
-            {/* Lifestyle */}
             <Section title="Lifestyle">
               <div className="space-y-4">
                 <Select
@@ -495,14 +497,14 @@ export default function EditProfilePage() {
                   }
                   options={[
                     { value: '', label: 'Select...' },
-                    { value: 'Sedentary', label: 'Sedentary (desk job, minimal exercise)' },
-                    { value: 'Light Active', label: 'Light Active (light exercise 1-3 days/week)' },
-                    { value: 'Active', label: 'Active (moderate exercise 3-5 days/week)' },
-                    { value: 'Very Active', label: 'Very Active (intense exercise 6-7 days/week)' },
+                    { value: 'Sedentary', label: 'Sedentary' },
+                    { value: 'Light Active', label: 'Light Active' },
+                    { value: 'Active', label: 'Active' },
+                    { value: 'Very Active', label: 'Very Active' },
                   ]}
                 />
                 <Input
-                  label="Sleep average (hours per night)"
+                  label="Sleep hours per night"
                   type="number"
                   step="0.5"
                   value={formData.averageSleepHours?.toString() || ''}
@@ -517,7 +519,7 @@ export default function EditProfilePage() {
                   placeholder="7.5"
                 />
                 <Textarea
-                  label="Dietary restrictions (allergies)"
+                  label="Dietary restrictions"
                   value={formData.dietaryRestrictions}
                   onChange={(e) =>
                     setFormData({
@@ -525,16 +527,15 @@ export default function EditProfilePage() {
                       dietaryRestrictions: e.target.value,
                     })
                   }
-                  placeholder="Any dietary restrictions or food allergies..."
+                  placeholder="Any restrictions or allergies..."
                 />
               </div>
             </Section>
 
-            {/* Preferences */}
             <Section title="Preferences">
               <div className="space-y-4">
                 <Input
-                  label="How many days out of the week do you plan on exercising?"
+                  label="Exercise days per week"
                   type="number"
                   value={formData.exerciseDaysPerWeek?.toString() || ''}
                   onChange={(e) =>
@@ -548,7 +549,7 @@ export default function EditProfilePage() {
                   placeholder="3"
                 />
                 <Textarea
-                  label="Preferred workout days of the week/time"
+                  label="Preferred workout days/time"
                   value={formData.preferredWorkoutDays}
                   onChange={(e) =>
                     setFormData({
@@ -580,8 +581,8 @@ export default function EditProfilePage() {
             {/* Action Buttons */}
             <div className="flex gap-4 justify-end pt-4 border-t">
               <Link
-                href="/client/profile"
-                className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                href="/admin/clients"
+                className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors inline-flex items-center"
               >
                 Cancel
               </Link>
@@ -720,4 +721,3 @@ function Textarea({
     </div>
   )
 }
-
