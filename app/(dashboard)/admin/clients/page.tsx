@@ -1,5 +1,6 @@
 import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 
 export default async function AdminClientsPage({
@@ -16,21 +17,84 @@ export default async function AdminClientsPage({
   // Fetch clients
   const params = await searchParams
   const searchQuery = params.search || ''
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/admin/clients?search=${searchQuery}`,
-    {
-      headers: {
-        Cookie: `authjs.session-token=${session.user.id}`, // Pass session
-      },
-      cache: 'no-store',
-    }
-  ).catch(() => null)
 
-  let clients: any[] = []
-  if (response && response.ok) {
-    const data = await response.json()
-    clients = data.clients || []
-  }
+  // Build where clause
+  const where = searchQuery
+    ? {
+        role: 'CLIENT' as const,
+        OR: [
+          {
+            email: {
+              contains: searchQuery,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            clientProfile: {
+              fullName: {
+                contains: searchQuery,
+                mode: 'insensitive' as const,
+              },
+            },
+          },
+        ],
+      }
+    : {
+        role: 'CLIENT' as const,
+      }
+
+  const clients = await prisma.user.findMany({
+    where,
+    include: {
+      clientProfile: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  // Calculate profile completion for each client
+  const clientsWithCompletion = clients.map((client) => {
+    const profile = client.clientProfile
+    if (!profile) {
+      return { ...client, profileCompletion: 0 }
+    }
+
+    const fields = [
+      profile.fullName,
+      profile.phone,
+      profile.email,
+      profile.age,
+      profile.gender,
+      profile.height,
+      profile.currentWeight,
+      profile.emergencyContact,
+      profile.emergencyPhone,
+      profile.emergencyRelationship,
+      profile.hasMedicalConditions !== null ? true : null,
+      profile.isTakingMedications !== null ? true : null,
+      profile.hasInjuries !== null ? true : null,
+      profile.hasAllergies !== null ? true : null,
+      profile.fitnessLevel,
+      profile.hasWorkedOutBefore !== null ? true : null,
+      profile.hasHomeEquipment !== null ? true : null,
+      profile.primaryGoal,
+      profile.targetTimeline,
+      profile.typicalActivityLevel,
+      profile.averageSleepHours,
+      profile.exerciseDaysPerWeek,
+      profile.preferredWorkoutDays,
+      profile.sessionsPerMonth,
+    ]
+
+    const filledFields = fields.filter(
+      (field) => field !== null && field !== undefined && field !== ''
+    ).length
+
+    const completion = Math.round((filledFields / fields.length) * 100)
+
+    return { ...client, profileCompletion: completion }
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,7 +146,7 @@ export default async function AdminClientsPage({
           </form>
 
           {/* Client List */}
-          {clients.length === 0 ? (
+          {clientsWithCompletion.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-600 text-lg mb-2">No clients yet</p>
               <p className="text-gray-500">
@@ -91,7 +155,7 @@ export default async function AdminClientsPage({
             </div>
           ) : (
             <div className="space-y-4">
-              {clients.map((client: any) => (
+              {clientsWithCompletion.map((client: any) => (
                 <div
                   key={client.id}
                   className="border border-gray-200 rounded-lg p-4 hover:border-[#E8DCC4] transition-colors"
