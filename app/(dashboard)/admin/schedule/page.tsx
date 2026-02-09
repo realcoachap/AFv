@@ -147,10 +147,10 @@ export default function AdminSchedulePage() {
     <div className="min-h-screen bg-gray-50">
       <NavBar role="admin" backLink="/admin/dashboard" backText="← Dashboard" />
 
-      <main className="max-w-7xl mx-auto p-6">
+      <main className="max-w-7xl mx-auto p-3 sm:p-6">
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <StatCard label="Today" value={stats.todaySessions} />
             <StatCard label="This Week" value={stats.thisWeekSessions} />
             <StatCard label="This Month" value={stats.thisMonthSessions} />
@@ -163,39 +163,40 @@ export default function AdminSchedulePage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[#1A2332]">Schedule Management</h2>
-            <div className="flex gap-4">
+        <div className="bg-white rounded-lg shadow p-3 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1A2332]">Schedule Management</h2>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               {/* View Toggle */}
-              <div className="flex gap-2 border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex gap-1 sm:gap-2 border border-gray-300 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setView('calendar')}
-                  className={`px-4 py-2 font-medium transition-colors ${
+                  className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
                     view === 'calendar'
                       ? 'bg-[#E8DCC4] text-[#1A2332]'
                       : 'bg-white text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  📅 Calendar
+                  📅 <span className="hidden sm:inline">Calendar</span>
                 </button>
                 <button
                   onClick={() => setView('list')}
-                  className={`px-4 py-2 font-medium transition-colors ${
+                  className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
                     view === 'list'
                       ? 'bg-[#E8DCC4] text-[#1A2332]'
                       : 'bg-white text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  📋 List
+                  📋 <span className="hidden sm:inline">List</span>
                 </button>
               </div>
               
               <Link
                 href="/admin/schedule/new"
-                className="px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] transition-colors"
+                className="px-3 sm:px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold text-sm sm:text-base hover:bg-[#D8CCA4] transition-colors whitespace-nowrap"
               >
-                + New Session
+                <span className="sm:hidden">+ New</span>
+                <span className="hidden sm:inline">+ New Session</span>
               </Link>
             </div>
           </div>
@@ -203,9 +204,12 @@ export default function AdminSchedulePage() {
           {/* Calendar View */}
           {view === 'calendar' && (
             <>
-              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  💡 <strong>Tip:</strong> Click any empty time slot to quickly book a session!
+              <div className="mb-3 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs sm:text-sm text-blue-800">
+                  💡 <strong className="hidden sm:inline">Tip: </strong>
+                  <span className="sm:hidden">Tap </span>
+                  <span className="hidden sm:inline">Click </span>
+                  any empty slot to quickly book a session!
                 </p>
               </div>
               <Calendar

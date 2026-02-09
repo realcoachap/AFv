@@ -91,18 +91,26 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4" style={{ height: '700px' }}>
+    <div className="bg-white rounded-lg shadow p-2 sm:p-4" style={{ height: '600px', minHeight: '500px' }}>
       <style jsx global>{`
         .rbc-calendar {
           font-family: inherit;
         }
         
         .rbc-header {
-          padding: 12px 6px;
+          padding: 8px 4px;
           font-weight: 600;
           background: #F9FAFB;
           border-bottom: 2px solid #E5E7EB;
           color: #1A2332;
+          font-size: 0.75rem;
+        }
+        
+        @media (min-width: 640px) {
+          .rbc-header {
+            padding: 12px 6px;
+            font-size: 0.875rem;
+          }
         }
         
         .rbc-today {
@@ -116,37 +124,90 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
         .rbc-event {
           cursor: pointer;
           transition: transform 0.1s ease;
+          font-size: 0.7rem;
+          padding: 2px 4px !important;
         }
         
-        .rbc-event:hover {
-          transform: scale(1.02);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        @media (min-width: 640px) {
+          .rbc-event {
+            font-size: 0.875rem;
+            padding: 4px 8px !important;
+          }
         }
         
+        .rbc-event:active {
+          transform: scale(0.98);
+        }
+        
+        @media (hover: hover) {
+          .rbc-event:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          }
+        }
+        
+        /* Mobile-friendly toolbar */
         .rbc-toolbar {
-          padding: 12px 0;
-          margin-bottom: 16px;
+          padding: 8px 0;
+          margin-bottom: 12px;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        
+        @media (min-width: 640px) {
+          .rbc-toolbar {
+            padding: 12px 0;
+            margin-bottom: 16px;
+          }
         }
         
         .rbc-toolbar button {
-          padding: 8px 16px;
+          padding: 6px 12px;
           border-radius: 6px;
           border: 1px solid #E5E7EB;
           background: white;
           color: #1A2332;
           font-weight: 500;
+          font-size: 0.75rem;
           transition: all 0.2s;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
         }
         
-        .rbc-toolbar button:hover {
+        @media (min-width: 640px) {
+          .rbc-toolbar button {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+          }
+        }
+        
+        .rbc-toolbar button:active {
           background: #F3F4F6;
-          border-color: #E8DCC4;
+          transform: scale(0.98);
+        }
+        
+        @media (hover: hover) {
+          .rbc-toolbar button:hover {
+            background: #F3F4F6;
+            border-color: #E8DCC4;
+          }
         }
         
         .rbc-toolbar button.rbc-active {
           background: #E8DCC4;
           border-color: #1A2332;
           color: #1A2332;
+        }
+        
+        .rbc-toolbar-label {
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+        
+        @media (min-width: 640px) {
+          .rbc-toolbar-label {
+            font-size: 1rem;
+          }
         }
         
         .rbc-month-view {
@@ -157,17 +218,44 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
         
         .rbc-day-bg {
           border-color: #E5E7EB;
+          min-height: 60px;
+        }
+        
+        @media (min-width: 640px) {
+          .rbc-day-bg {
+            min-height: 80px;
+          }
         }
         
         .rbc-date-cell {
-          padding: 8px;
+          padding: 4px;
           text-align: right;
           color: #6B7280;
+          font-size: 0.75rem;
+        }
+        
+        @media (min-width: 640px) {
+          .rbc-date-cell {
+            padding: 8px;
+            font-size: 0.875rem;
+          }
         }
         
         .rbc-current .rbc-date-cell {
           font-weight: 700;
           color: #1A2332;
+        }
+        
+        /* Better touch targets for mobile */
+        .rbc-day-slot .rbc-time-slot {
+          min-height: 44px;
+        }
+        
+        /* Make selectable slots more obvious on touch devices */
+        @media (max-width: 639px) {
+          .rbc-day-bg.rbc-today {
+            box-shadow: inset 0 0 0 2px #F59E0B;
+          }
         }
       `}</style>
       
