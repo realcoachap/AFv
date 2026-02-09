@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Image from 'next/image'
+import VersionFooter from '@/app/components/VersionFooter'
 
 export default async function ClientDashboard() {
   const session = await auth()
@@ -27,6 +28,7 @@ export default async function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <VersionFooter />
       <nav className="bg-[#1A2332] text-white p-3 sm:p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Link href="/client/dashboard" className="flex items-center hover:opacity-80 transition-opacity">
