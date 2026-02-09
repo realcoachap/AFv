@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Logo from './Logo'
+import Image from 'next/image'
 
 interface NavBarProps {
   role: 'admin' | 'client'
@@ -14,12 +14,16 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
   return (
     <nav className="bg-[#1A2332] text-white p-3 sm:p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo - Hide text on mobile */}
-        <Link href={dashboardLink} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
-          <Logo size="sm" showText={false} />
-          {/* Hide "Ascending Fitness" text on mobile, show on tablet+ */}
-          <span className="hidden sm:block text-xl font-bold">Ascending Fitness</span>
-          {role === 'admin' && <span className="hidden md:inline text-[#E8DCC4] text-sm">— Admin</span>}
+        {/* Logo Only - No Text */}
+        <Link href={dashboardLink} className="flex items-center hover:opacity-80 transition-opacity">
+          <Image 
+            src="/logo.jpg" 
+            alt="Ascending Fitness" 
+            width={48} 
+            height={48} 
+            className="object-contain w-12 h-12 sm:w-14 sm:h-14" 
+            priority
+          />
         </Link>
 
         {/* Back Link - Compact on mobile */}
