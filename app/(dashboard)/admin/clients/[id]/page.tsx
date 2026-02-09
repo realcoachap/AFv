@@ -2,6 +2,7 @@ import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import Logo from '@/app/components/Logo'
 
 export default async function AdminClientViewPage({
   params,
@@ -71,7 +72,9 @@ export default async function AdminClientViewPage({
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
+          <Link href="/admin/dashboard">
+            <Logo size="md" />
+          </Link>
           <div className="flex gap-4 items-center">
             <Link
               href="/admin/clients"

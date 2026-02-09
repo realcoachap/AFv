@@ -520,7 +520,10 @@ export default function EditProfilePage() {
                 />
                 <Input
                   label="Sleep average (hours per night)"
-                  type="number" inputMode="numeric"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="24"
                   step="0.5"
                   value={formData.averageSleepHours?.toString() || ''}
                   onChange={(e) =>
@@ -552,7 +555,11 @@ export default function EditProfilePage() {
               <div className="space-y-4">
                 <Input
                   label="How many days out of the week do you plan on exercising?"
-                  type="number" inputMode="numeric"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="7"
+                  step="1"
                   value={formData.exerciseDaysPerWeek?.toString() || ''}
                   onChange={(e) =>
                     setFormData({
@@ -577,7 +584,10 @@ export default function EditProfilePage() {
                 />
                 <Input
                   label="Sessions per month"
-                  type="number" inputMode="numeric"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="31"
                   step="1"
                   value={formData.sessionsPerMonth?.toString() || ''}
                   onChange={(e) =>
@@ -640,6 +650,8 @@ function Input({
   onChange,
   placeholder,
   step,
+  min,
+  max,
   inputMode,
   error,
 }: {
@@ -649,6 +661,8 @@ function Input({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   step?: string
+  min?: string
+  max?: string
   inputMode?: 'numeric' | 'decimal' | 'tel' | 'search' | 'email' | 'url' | 'text' | 'none'
   error?: string
 }) {
@@ -663,6 +677,8 @@ function Input({
         onChange={onChange}
         placeholder={placeholder}
         step={step}
+        min={min}
+        max={max}
         inputMode={inputMode}
         className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent ${
           error ? 'border-red-500' : 'border-gray-300'
