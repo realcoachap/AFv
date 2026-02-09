@@ -10,10 +10,27 @@ export default async function AdminDashboard() {
     redirect('/login')
   }
 
-  // Get client count
-  const clientCount = await prisma.user.count({
-    where: { role: 'CLIENT' },
-  })
+  // Get stats
+  const now = new Date()
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  
+  const [clientCount, todaySessions, pendingApprovals] = await Promise.all([
+    prisma.user.count({
+      where: { role: 'CLIENT' },
+    }),
+    prisma.appointment.count({
+      where: {
+        dateTime: {
+          gte: startOfToday,
+          lt: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000),
+        },
+        status: { in: ['CONFIRMED', 'PENDING_APPROVAL'] },
+      },
+    }),
+    prisma.appointment.count({
+      where: { status: 'PENDING_APPROVAL' },
+    }),
+  ])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,6 +43,12 @@ export default async function AdminDashboard() {
               className="hover:text-[#E8DCC4] transition-colors"
             >
               Clients
+            </Link>
+            <Link
+              href="/admin/schedule"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Schedule
             </Link>
             <form
               action={async () => {
@@ -61,17 +84,19 @@ export default async function AdminDashboard() {
             <p className="text-sm text-[#E8DCC4] mt-2 font-medium">View All →</p>
           </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/schedule?status=PENDING_APPROVAL" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Pending Approvals</h3>
-            <p className="text-4xl font-bold text-[#F59E0B]">0</p>
-            <p className="text-sm text-gray-500 mt-2">Coming in Phase 5</p>
-          </div>
+            <p className="text-4xl font-bold text-[#F59E0B]">{pendingApprovals}</p>
+            <p className="text-sm text-[#E8DCC4] font-medium mt-2">
+              {pendingApprovals > 0 ? 'Review Now →' : 'All clear!'}
+            </p>
+          </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/schedule" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Today's Sessions</h3>
-            <p className="text-4xl font-bold text-[#10B981]">0</p>
-            <p className="text-sm text-gray-500 mt-2">Coming in Phase 5</p>
-          </div>
+            <p className="text-4xl font-bold text-[#10B981]">{todaySessions}</p>
+            <p className="text-sm text-[#E8DCC4] font-medium mt-2">View Schedule →</p>
+          </Link>
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">

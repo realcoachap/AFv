@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ConditionalField from '@/app/components/profile/ConditionalField'
+import { validateProfile } from '@/app/lib/validations/profile'
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -10,6 +12,7 @@ export default function EditProfilePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   // Form state
   const [formData, setFormData] = useState({
@@ -106,6 +109,16 @@ export default function EditProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setValidationErrors({})
+    
+    // Client-side validation
+    const validation = validateProfile(formData)
+    if (!validation.success) {
+      setValidationErrors(validation.errors)
+      setError('Please fix the validation errors below')
+      return
+    }
+    
     setSaving(true)
 
     try {
@@ -335,7 +348,7 @@ export default function EditProfilePage() {
             {/* Health & Medical */}
             <Section title="Health & Medical">
               <div className="space-y-4">
-                <YesNoField
+                <ConditionalField
                   label="Do you have any medical conditions?"
                   value={formData.hasMedicalConditions}
                   onChange={(val) =>
@@ -348,7 +361,7 @@ export default function EditProfilePage() {
                   }
                   descriptionPlaceholder="Please describe your medical conditions..."
                 />
-                <YesNoField
+                <ConditionalField
                   label="Are you taking any medications?"
                   value={formData.isTakingMedications}
                   onChange={(val) =>
@@ -361,7 +374,7 @@ export default function EditProfilePage() {
                   }
                   descriptionPlaceholder="Please list your medications..."
                 />
-                <YesNoField
+                <ConditionalField
                   label="Any injuries or past surgeries?"
                   value={formData.hasInjuries}
                   onChange={(val) => setFormData({ ...formData, hasInjuries: val })}
@@ -372,7 +385,7 @@ export default function EditProfilePage() {
                   }
                   descriptionPlaceholder="Please describe your injuries or surgeries..."
                 />
-                <YesNoField
+                <ConditionalField
                   label="Do you have any allergies?"
                   value={formData.hasAllergies}
                   onChange={(val) =>
@@ -404,7 +417,7 @@ export default function EditProfilePage() {
             {/* Fitness History */}
             <Section title="Fitness History">
               <div className="space-y-4">
-                <YesNoField
+                <ConditionalField
                   label="Have you worked out before?"
                   value={formData.hasWorkedOutBefore}
                   onChange={(val) =>
@@ -422,7 +435,7 @@ export default function EditProfilePage() {
                   }
                   placeholder="e.g., Running, weightlifting, yoga..."
                 />
-                <YesNoField
+                <ConditionalField
                   label="Do you have workout equipment access at home?"
                   value={formData.hasHomeEquipment}
                   onChange={(val) =>
@@ -548,6 +561,7 @@ export default function EditProfilePage() {
                 <Input
                   label="Sessions per month"
                   type="number"
+                  step="1"
                   value={formData.sessionsPerMonth?.toString() || ''}
                   onChange={(e) =>
                     setFormData({
@@ -558,6 +572,7 @@ export default function EditProfilePage() {
                     })
                   }
                   placeholder="8"
+                  error={validationErrors.sessionsPerMonth}
                 />
               </div>
             </Section>
@@ -608,6 +623,7 @@ function Input({
   onChange,
   placeholder,
   step,
+  error,
 }: {
   label: string
   type?: string
@@ -615,6 +631,7 @@ function Input({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   step?: string
+  error?: string
 }) {
   return (
     <div>
@@ -627,8 +644,11 @@ function Input({
         onChange={onChange}
         placeholder={placeholder}
         step={step}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+        className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent ${
+          error ? 'border-red-500' : 'border-gray-300'
+        }`}
       />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   )
 }
@@ -638,11 +658,13 @@ function Select({
   value,
   onChange,
   options,
+  error,
 }: {
   label: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   options: { value: string; label: string }[]
+  error?: string
 }) {
   return (
     <div>
@@ -652,7 +674,9 @@ function Select({
       <select
         value={value}
         onChange={onChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+        className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent ${
+          error ? 'border-red-500' : 'border-gray-300'
+        }`}
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -660,6 +684,7 @@ function Select({
           </option>
         ))}
       </select>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   )
 }
@@ -669,11 +694,13 @@ function Textarea({
   value,
   onChange,
   placeholder,
+  error,
 }: {
   label: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   placeholder?: string
+  error?: string
 }) {
   return (
     <div>
@@ -685,63 +712,12 @@ function Textarea({
         onChange={onChange}
         placeholder={placeholder}
         rows={3}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+        className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent ${
+          error ? 'border-red-500' : 'border-gray-300'
+        }`}
       />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   )
 }
 
-function YesNoField({
-  label,
-  value,
-  onChange,
-  showDescription = false,
-  descriptionValue,
-  onDescriptionChange,
-  descriptionPlaceholder,
-}: {
-  label: string
-  value: boolean | null
-  onChange: (val: boolean | null) => void
-  showDescription?: boolean
-  descriptionValue?: string
-  onDescriptionChange?: (val: string) => void
-  descriptionPlaceholder?: string
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
-      <div className="flex gap-4 mb-2">
-        <label className="flex items-center">
-          <input
-            type="radio"
-            checked={value === true}
-            onChange={() => onChange(true)}
-            className="mr-2"
-          />
-          Yes
-        </label>
-        <label className="flex items-center">
-          <input
-            type="radio"
-            checked={value === false}
-            onChange={() => onChange(false)}
-            className="mr-2"
-          />
-          No
-        </label>
-      </div>
-      {showDescription && (
-        <textarea
-          value={descriptionValue || ''}
-          onChange={(e) => onDescriptionChange?.(e.target.value)}
-          placeholder={descriptionPlaceholder}
-          rows={3}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent mt-2"
-        />
-      )}
-    </div>
-  )
-}

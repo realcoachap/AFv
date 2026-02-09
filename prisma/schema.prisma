@@ -108,6 +108,10 @@ model Appointment {
   dateTime  DateTime
   duration  Int      @default(60) // Duration in minutes
   
+  // Session Details
+  sessionType SessionType @default(ONE_ON_ONE)
+  location    String?     // "LA Fitness", "Client Home", "Virtual", etc.
+  
   // Status tracking
   status    AppointmentStatus @default(PENDING_APPROVAL)
   
@@ -123,6 +127,10 @@ model Appointment {
   clientNotes     String?  // Client's notes when booking (reason, preferences, etc.)
   rejectionReason String?  // If admin rejects, optional reason
   
+  // Cancellation tracking
+  cancelledAt     DateTime?
+  cancelReason    String?   // Reason for cancellation
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -130,6 +138,7 @@ model Appointment {
   @@index([adminId])
   @@index([dateTime])
   @@index([status])
+  @@index([sessionType])
 }
 
 enum AppointmentStatus {
@@ -144,4 +153,11 @@ enum AppointmentStatus {
 enum BookedBy {
   CLIENT  // Client self-booked (needs approval)
   ADMIN   // Admin created directly (auto-confirmed)
+}
+
+enum SessionType {
+  ONE_ON_ONE      // Standard 1-on-1 training session
+  GROUP           // Group training class
+  ASSESSMENT      // Initial assessment / consultation
+  CHECK_IN        // Progress check-in / weigh-in
 }

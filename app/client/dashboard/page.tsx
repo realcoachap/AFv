@@ -10,10 +10,19 @@ export default async function ClientDashboard() {
     redirect('/login')
   }
 
-  // Fetch client profile
-  const profile = await prisma.clientProfile.findUnique({
-    where: { userId: session.user.id },
-  })
+  // Fetch client profile and upcoming sessions
+  const [profile, upcomingCount] = await Promise.all([
+    prisma.clientProfile.findUnique({
+      where: { userId: session.user.id },
+    }),
+    prisma.appointment.count({
+      where: {
+        clientId: session.user.id,
+        dateTime: { gte: new Date() },
+        status: { in: ['CONFIRMED', 'PENDING_APPROVAL'] },
+      },
+    }),
+  ])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,6 +35,12 @@ export default async function ClientDashboard() {
               className="hover:text-[#E8DCC4] transition-colors"
             >
               My Profile
+            </Link>
+            <Link
+              href="/client/schedule"
+              className="hover:text-[#E8DCC4] transition-colors"
+            >
+              Schedule
             </Link>
             <form
               action={async () => {
@@ -67,14 +82,16 @@ export default async function ClientDashboard() {
             </span>
           </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/client/schedule" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>
-            <p className="text-4xl font-bold text-[#1A2332]">0</p>
-            <p className="text-sm text-gray-500 mt-2">No sessions scheduled</p>
-            <button className="mt-4 text-[#1A2332] font-medium hover:underline">
-              Book Session → (Coming in Phase 5)
-            </button>
-          </div>
+            <p className="text-4xl font-bold text-[#1A2332]">{upcomingCount}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              {upcomingCount === 0 ? 'No sessions scheduled' : `${upcomingCount} session${upcomingCount !== 1 ? 's' : ''} coming up`}
+            </p>
+            <span className="mt-4 inline-block text-[#1A2332] font-medium hover:underline">
+              View Schedule →
+            </span>
+          </Link>
         </div>
 
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
