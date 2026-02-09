@@ -123,6 +123,29 @@ export default async function AdminDashboard() {
           </Link>
         </div>
 
+        {/* RPG Demo Card */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-lg p-6 mt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-purple-900 mb-2">
+                🎮 NEW: RPG System Demo
+              </h3>
+              <p className="text-purple-700 mb-3">
+                Test the gamification system! Award XP, view stats, and see the magic in action.
+              </p>
+              <Link
+                href="/admin/rpg/demo"
+                className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
+              >
+                Open RPG Demo →
+              </Link>
+            </div>
+            <div className="hidden sm:block text-6xl">
+              🏆
+            </div>
+          </div>
+        </div>
+
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
             🎉 Phase 2 Complete!
