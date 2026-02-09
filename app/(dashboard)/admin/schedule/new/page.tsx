@@ -60,11 +60,15 @@ export default function NewSessionPage() {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
         },
       })
       if (response.ok) {
         const data = await response.json()
         console.log('📋 Loaded clients:', data.clients.length)
+        data.clients.forEach((c: any) => {
+          console.log(`  - ${c.clientProfile?.fullName}: phone=${c.clientProfile?.phone}`)
+        })
         setClients(data.clients)
       }
     } catch (error) {

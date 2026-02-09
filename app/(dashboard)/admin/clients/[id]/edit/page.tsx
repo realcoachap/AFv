@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
+import NavBar from '@/app/components/NavBar'
 import ConditionalField from '@/app/components/profile/ConditionalField'
 import { validateProfile } from '@/app/lib/validations/profile'
 
@@ -145,9 +146,11 @@ export default function AdminEditClientProfilePage() {
 
       if (response.ok) {
         setSuccess(true)
+        // Force refresh to invalidate all cached client data
+        router.refresh()
         setTimeout(() => {
           router.push('/admin/clients')
-        }, 1000)
+        }, 1500)
       } else {
         const data = await response.json()
         setError(data.error || 'Failed to save profile')
@@ -172,14 +175,7 @@ export default function AdminEditClientProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-          <Link href="/admin/clients" className="text-[#E8DCC4] hover:underline">
-            ← Back to Clients
-          </Link>
-        </div>
-      </nav>
+      <NavBar role="admin" backLink="/admin/clients" backText="← Back to Clients" />
 
       <main className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -198,7 +194,7 @@ export default function AdminEditClientProfilePage() {
 
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-              Profile saved successfully! Redirecting...
+              ✅ Profile saved successfully! Phone number and all changes have been updated. Redirecting...
             </div>
           )}
 
