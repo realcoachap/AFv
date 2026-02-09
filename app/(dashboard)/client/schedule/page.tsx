@@ -70,46 +70,47 @@ export default function ClientSchedulePage() {
     <div className="min-h-screen bg-gray-50">
       <NavBar role="client" backLink="/client/dashboard" backText="← Dashboard" />
 
-      <main className="max-w-6xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+      <main className="max-w-6xl mx-auto p-3 sm:p-6">
+        <div className="bg-white rounded-lg shadow p-3 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
             <div>
-              <h2 className="text-2xl font-bold text-[#1A2332]">My Schedule</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#1A2332]">My Schedule</h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 {upcomingCount} upcoming session{upcomingCount !== 1 ? 's' : ''}
               </p>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               {/* Book Session Button */}
               <Link
                 href="/client/schedule/book"
-                className="px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold hover:bg-[#D8CCA4] transition-colors"
+                className="px-3 sm:px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold text-sm sm:text-base hover:bg-[#D8CCA4] transition-colors text-center whitespace-nowrap"
               >
-                + Book Session
+                <span className="sm:hidden">+ Book</span>
+                <span className="hidden sm:inline">+ Book Session</span>
               </Link>
               
               {/* View Toggle */}
-              <div className="flex gap-2 border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex gap-1 sm:gap-2 border border-gray-300 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView('calendar')}
-                className={`px-4 py-2 font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
                   view === 'calendar'
                     ? 'bg-[#E8DCC4] text-[#1A2332]'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                📅 Calendar
+                📅 <span className="hidden sm:inline">Calendar</span>
               </button>
               <button
                 onClick={() => setView('list')}
-                className={`px-4 py-2 font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
                   view === 'list'
                     ? 'bg-[#E8DCC4] text-[#1A2332]'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                📋 List
+                📋 <span className="hidden sm:inline">List</span>
               </button>
             </div>
             </div>
