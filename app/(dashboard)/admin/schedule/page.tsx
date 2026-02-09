@@ -207,23 +207,38 @@ export default function AdminSchedulePage() {
               <div className="mb-3 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-xs sm:text-sm text-blue-800">
                   💡 <strong className="hidden sm:inline">Tip: </strong>
-                  <span className="sm:hidden">Tap </span>
-                  <span className="hidden sm:inline">Click </span>
-                  any empty slot to quickly book a session!
+                  <span className="sm:hidden">Tap empty slot or use </span>
+                  <span className="hidden sm:inline">Click any empty slot to quickly book a session!</span>
+                  <span className="sm:hidden font-semibold">+ button</span>
                 </p>
               </div>
-              <Calendar
-                appointments={appointments}
-                onSelectEvent={(event) => {
-                  const apt = appointments.find((a) => a.id === event.id)
-                  setSelectedEvent(apt || null)
-                }}
-                onSelectSlot={(slotInfo) => {
-                  setSelectedSlot(slotInfo)
-                  setQuickBookModalOpen(true)
-                }}
-                isAdmin
-              />
+              <div className="relative">
+                <Calendar
+                  appointments={appointments}
+                  onSelectEvent={(event) => {
+                    const apt = appointments.find((a) => a.id === event.id)
+                    setSelectedEvent(apt || null)
+                  }}
+                  onSelectSlot={(slotInfo) => {
+                    setSelectedSlot(slotInfo)
+                    setQuickBookModalOpen(true)
+                  }}
+                  isAdmin
+                />
+                {/* Mobile Quick Add Button */}
+                <button
+                  onClick={() => {
+                    // Open modal with current date/time
+                    const now = new Date()
+                    setSelectedSlot({ start: now, end: new Date(now.getTime() + 60 * 60000) })
+                    setQuickBookModalOpen(true)
+                  }}
+                  className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#E8DCC4] text-[#1A2332] rounded-full shadow-lg flex items-center justify-center text-2xl font-bold hover:bg-[#D8CCA4] active:scale-95 transition-all z-50"
+                  aria-label="Quick add session"
+                >
+                  +
+                </button>
+              </div>
             </>
           )}
 

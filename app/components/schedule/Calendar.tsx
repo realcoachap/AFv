@@ -256,6 +256,23 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
           .rbc-day-bg.rbc-today {
             box-shadow: inset 0 0 0 2px #F59E0B;
           }
+          
+          /* Better touch interaction for calendar slots */
+          .rbc-day-bg {
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+          }
+          
+          .rbc-day-bg:active {
+            background-color: rgba(232, 220, 196, 0.2);
+          }
+        }
+        
+        /* Improve touch selection feedback */
+        .rbc-slot-selection {
+          background-color: rgba(232, 220, 196, 0.4) !important;
+          border: 2px solid #E8DCC4 !important;
         }
       `}</style>
       
@@ -270,9 +287,12 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
         onSelectEvent={onSelectEvent}
         onSelectSlot={onSelectSlot}
         selectable={isAdmin && !!onSelectSlot}
+        longPressThreshold={10}
         eventPropGetter={eventStyleGetter}
         popup
         style={{ height: '100%' }}
+        step={30}
+        timeslots={2}
       />
     </div>
   )
