@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import NavBar from '@/app/components/NavBar'
+import VersionFooter from '@/app/components/VersionFooter'
 import ConditionalField from '@/app/components/profile/ConditionalField'
 import { validateProfile } from '@/app/lib/validations/profile'
 
@@ -176,6 +177,7 @@ export default function AdminEditClientProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar role="admin" backLink="/admin/clients" backText="← Back to Clients" />
+      <VersionFooter />
 
       <main className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -214,7 +216,8 @@ export default function AdminEditClientProfilePage() {
                     Age
                   </label>
                   <input
-                    type="number"
+                    type="number" inputMode="numeric"
+                    inputMode="numeric"
                     min="10"
                     max="100"
                     step="1"
@@ -248,7 +251,7 @@ export default function AdminEditClientProfilePage() {
                   </label>
                   <div className="flex gap-2">
                     <input
-                      type="number"
+                      type="number" inputMode="numeric"
                       min={formData.heightUnit === 'inches' ? '36' : '90'}
                       max={formData.heightUnit === 'inches' ? '96' : '250'}
                       step="0.5"
@@ -280,7 +283,7 @@ export default function AdminEditClientProfilePage() {
                   </label>
                   <div className="flex gap-2">
                     <input
-                      type="number"
+                      type="number" inputMode="numeric"
                       min={formData.weightUnit === 'pounds' ? '50' : '20'}
                       max={formData.weightUnit === 'pounds' ? '500' : '250'}
                       step="0.5"
@@ -525,7 +528,7 @@ export default function AdminEditClientProfilePage() {
                     Sleep hours per night
                   </label>
                   <input
-                    type="number"
+                    type="number" inputMode="numeric"
                     min="0"
                     max="24"
                     step="0.5"
@@ -563,7 +566,7 @@ export default function AdminEditClientProfilePage() {
                     Exercise days per week
                   </label>
                   <input
-                    type="number"
+                    type="number" inputMode="numeric"
                     min="0"
                     max="7"
                     step="1"
@@ -593,7 +596,7 @@ export default function AdminEditClientProfilePage() {
                 />
                 <Input
                   label="Sessions per month"
-                  type="number"
+                  type="number" inputMode="numeric"
                   step="1"
                   value={formData.sessionsPerMonth?.toString() || ''}
                   onChange={(e) =>

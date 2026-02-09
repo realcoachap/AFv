@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import VersionFooter from '@/app/components/VersionFooter'
 import ConditionalField from '@/app/components/profile/ConditionalField'
 import { validateProfile } from '@/app/lib/validations/profile'
 
@@ -201,17 +202,27 @@ export default function EditProfilePage() {
                     setFormData({ ...formData, fullName: e.target.value })
                   }
                 />
-                <Input
-                  label="Age"
-                  type="number"
-                  value={formData.age?.toString() || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      age: e.target.value ? parseInt(e.target.value) : null,
-                    })
-                  }
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="10"
+                    max="100"
+                    step="1"
+                    value={formData.age?.toString() || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        age: e.target.value ? parseInt(e.target.value) : null,
+                      })
+                    }
+                    placeholder="30"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+                  />
+                </div>
                 <Select
                   label="Gender"
                   value={formData.gender}
@@ -232,7 +243,10 @@ export default function EditProfilePage() {
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      step="0.1"
+                      inputMode="decimal"
+                      min={formData.heightUnit === 'inches' ? '36' : '90'}
+                      max={formData.heightUnit === 'inches' ? '96' : '250'}
+                      step="0.5"
                       value={formData.height || ''}
                       onChange={(e) =>
                         setFormData({
@@ -241,7 +255,7 @@ export default function EditProfilePage() {
                         })
                       }
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
-                      placeholder="72"
+                      placeholder={formData.heightUnit === 'inches' ? '72' : '183'}
                     />
                     <select
                       value={formData.heightUnit}
@@ -262,7 +276,10 @@ export default function EditProfilePage() {
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      step="0.1"
+                      inputMode="decimal"
+                      min={formData.weightUnit === 'pounds' ? '50' : '20'}
+                      max={formData.weightUnit === 'pounds' ? '500' : '250'}
+                      step="0.5"
                       value={formData.currentWeight || ''}
                       onChange={(e) =>
                         setFormData({
@@ -273,7 +290,7 @@ export default function EditProfilePage() {
                         })
                       }
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
-                      placeholder="180"
+                      placeholder={formData.weightUnit === 'pounds' ? '180' : '80'}
                     />
                     <select
                       value={formData.weightUnit}
@@ -503,7 +520,7 @@ export default function EditProfilePage() {
                 />
                 <Input
                   label="Sleep average (hours per night)"
-                  type="number"
+                  type="number" inputMode="numeric"
                   step="0.5"
                   value={formData.averageSleepHours?.toString() || ''}
                   onChange={(e) =>
@@ -535,7 +552,7 @@ export default function EditProfilePage() {
               <div className="space-y-4">
                 <Input
                   label="How many days out of the week do you plan on exercising?"
-                  type="number"
+                  type="number" inputMode="numeric"
                   value={formData.exerciseDaysPerWeek?.toString() || ''}
                   onChange={(e) =>
                     setFormData({
@@ -560,7 +577,7 @@ export default function EditProfilePage() {
                 />
                 <Input
                   label="Sessions per month"
-                  type="number"
+                  type="number" inputMode="numeric"
                   step="1"
                   value={formData.sessionsPerMonth?.toString() || ''}
                   onChange={(e) =>
