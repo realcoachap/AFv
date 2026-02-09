@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { sendWhatsAppMessage, formatPhoneNumber } from '@/lib/whatsapp'
 
 /**
  * POST /api/reminders/send
@@ -104,19 +105,39 @@ export async function POST(req: NextRequest) {
       message = `Hey ${clientName}! 📅\n\nReminder: ${sessionTypeStr} on ${dateStr} at ${timeStr} @ ${locationStr}.\n\nLooking forward to it! 💪\n\n- Coach`
     }
 
-    // Return message details for client-side sending
-    // The client will use OpenClaw's message tool to send
-    return NextResponse.json({
-      success: true,
+    // Send WhatsApp message
+    const formattedPhone = formatPhoneNumber(phone)
+    const result = await sendWhatsAppMessage({
+      to: formattedPhone,
       message,
-      phone,
-      appointment: {
-        id: appointment.id,
-        dateTime: appointment.dateTime,
-        sessionType: appointment.sessionType,
-        location: appointment.location,
-      },
     })
+
+    if (result.success) {
+      return NextResponse.json({
+        success: true,
+        message: 'Reminder sent successfully! ✅',
+        messageText: message,
+        phone: formattedPhone,
+        messageId: result.messageId,
+      })
+    } else if (result.dryRun) {
+      // Not configured yet - return instructions
+      return NextResponse.json({
+        success: false,
+        dryRun: true,
+        error: result.error,
+        message,
+        phone: formattedPhone,
+        instructions: 'To enable WhatsApp reminders, add these environment variables in Railway:\n\n• TWILIO_ACCOUNT_SID\n• TWILIO_AUTH_TOKEN\n• TWILIO_WHATSAPP_NUMBER\n\nGet them from: https://console.twilio.com',
+      }, { status: 200 })
+    } else {
+      return NextResponse.json({
+        success: false,
+        error: result.error || 'Failed to send message',
+        message,
+        phone: formattedPhone,
+      }, { status: 500 })
+    }
   } catch (error) {
     console.error('Send reminder error:', error)
     return NextResponse.json(

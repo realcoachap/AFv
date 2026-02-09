@@ -99,12 +99,15 @@ export default function AdminSchedulePage() {
         body: JSON.stringify({ appointmentId, reminderType }),
       })
       
-      if (response.ok) {
-        const data = await response.json()
-        alert(`✅ Reminder prepared!\n\nTo: ${data.phone}\nMessage: ${data.message}`)
-        // TODO: Integrate with actual WhatsApp sending
+      const data = await response.json()
+      
+      if (data.success) {
+        // Message sent successfully!
+        alert(`✅ WhatsApp Reminder Sent!\n\nTo: ${data.phone}\n\n"${data.messageText}"\n\nMessage ID: ${data.messageId}`)
+      } else if (data.dryRun) {
+        // Not configured yet - show setup instructions
+        alert(`⚠️  WhatsApp Not Configured\n\n${data.error}\n\n${data.instructions}\n\nMessage Preview:\n"${data.message}"\n\nTo: ${data.phone}`)
       } else {
-        const data = await response.json()
         alert(`❌ Error: ${data.error}`)
       }
     } catch (error) {
