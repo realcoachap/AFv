@@ -1,6 +1,9 @@
-# Client Management System for Personal Training
+# Ascending Fitness - Client Management System
 
 A comprehensive web application for managing personal training clients, scheduling, and client data.
+
+**Brand:** Ascending Fitness  
+**Mission:** Empowering clients to reach new heights through personalized training
 
 ## 🎯 Project Overview
 
