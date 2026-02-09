@@ -104,6 +104,7 @@ export default function QuickBookModal({
           location: 'LA Fitness',
           notes: '',
           clientNotes: '',
+          time: format(new Date(), 'HH:mm'),
         })
         onSuccess()
         onClose()

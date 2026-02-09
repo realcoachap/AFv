@@ -56,6 +56,7 @@ export default function ClientQuickBookModal({
           sessionType: 'ONE_ON_ONE',
           duration: 60,
           clientNotes: '',
+          time: format(new Date(), 'HH:mm'),
         })
         onSuccess()
         onClose()
