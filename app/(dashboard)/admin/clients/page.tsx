@@ -99,11 +99,17 @@ export default async function AdminClientsPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
+      <nav className="bg-[#1A2332] text-white p-3 sm:p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
-            <h1 className="text-xl font-bold">Ascending Fitness <span className="text-[#E8DCC4] text-sm">— Admin</span></h1>
+          <Link href="/admin/dashboard" className="flex items-center hover:opacity-80 transition-opacity">
+            <Image 
+              src="/logo.jpg" 
+              alt="Ascending Fitness" 
+              width={56} 
+              height={56} 
+              className="object-contain w-14 h-14 sm:w-16 sm:h-16" 
+              priority
+            />
           </Link>
           <div className="flex gap-3 sm:gap-4 items-center text-sm sm:text-base">
             <Link
