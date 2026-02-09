@@ -126,7 +126,7 @@ export default function AdminSchedulePage() {
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">Ascending Fitness - Admin</h1>
-          <Link href="/admin" className="text-[#E8DCC4] hover:underline">
+          <Link href="/admin/dashboard" className="text-[#E8DCC4] hover:underline">
             ← Dashboard
           </Link>
         </div>
