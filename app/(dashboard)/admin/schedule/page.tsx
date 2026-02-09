@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import Calendar from '@/app/components/schedule/Calendar'
+import NavBar from '@/app/components/NavBar'
 
 interface Client {
   id: string
@@ -128,14 +129,7 @@ export default function AdminSchedulePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <nav className="bg-[#1A2332] text-white p-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
-            <Link href="/admin/dashboard" className="text-[#E8DCC4] hover:underline">
-              ← Dashboard
-            </Link>
-          </div>
-        </nav>
+        <NavBar role="admin" backLink="/admin/dashboard" backText="← Dashboard" />
         <main className="max-w-7xl mx-auto p-6">
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A2332]"></div>
@@ -148,14 +142,7 @@ export default function AdminSchedulePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
-          <Link href="/admin/dashboard" className="text-[#E8DCC4] hover:underline">
-            ← Dashboard
-          </Link>
-        </div>
-      </nav>
+      <NavBar role="admin" backLink="/admin/dashboard" backText="← Dashboard" />
 
       <main className="max-w-7xl mx-auto p-6">
         {/* Stats Cards */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
+import NavBar from '@/app/components/NavBar'
 
 interface Client {
   id: string
@@ -183,14 +184,7 @@ export default function EditSessionPage() {
   if (error && !appointment) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <nav className="bg-[#1A2332] text-white p-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
-            <Link href="/admin/schedule" className="text-[#E8DCC4] hover:underline">
-              ← Back to Schedule
-            </Link>
-          </div>
-        </nav>
+        <NavBar role="admin" backLink="/admin/schedule" backText="← Back to Schedule" />
         <main className="max-w-2xl mx-auto p-6">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
@@ -202,14 +196,7 @@ export default function EditSessionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
-          <Link href="/admin/schedule" className="text-[#E8DCC4] hover:underline">
-            ← Back to Schedule
-          </Link>
-        </div>
-      </nav>
+      <NavBar role="admin" backLink="/admin/schedule" backText="← Back to Schedule" />
 
       <main className="max-w-2xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6">

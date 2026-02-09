@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import Calendar from '@/app/components/schedule/Calendar'
+import NavBar from '@/app/components/NavBar'
 
 interface Appointment {
   id: string
@@ -54,14 +55,7 @@ export default function ClientSchedulePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <nav className="bg-[#1A2332] text-white p-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-            <Link href="/client/dashboard" className="text-[#E8DCC4] hover:underline">
-              ← Dashboard
-            </Link>
-          </div>
-        </nav>
+        <NavBar role="client" backLink="/client/dashboard" backText="← Dashboard" />
         <main className="max-w-4xl mx-auto p-6">
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A2332]"></div>
@@ -74,14 +68,7 @@ export default function ClientSchedulePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-          <Link href="/client/dashboard" className="text-[#E8DCC4] hover:underline">
-            ← Dashboard
-          </Link>
-        </div>
-      </nav>
+      <NavBar role="client" backLink="/client/dashboard" backText="← Dashboard" />
 
       <main className="max-w-6xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
