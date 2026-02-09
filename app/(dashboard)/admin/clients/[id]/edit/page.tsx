@@ -209,17 +209,26 @@ export default function AdminEditClientProfilePage() {
                     setFormData({ ...formData, fullName: e.target.value })
                   }
                 />
-                <Input
-                  label="Age"
-                  type="number"
-                  value={formData.age?.toString() || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      age: e.target.value ? parseInt(e.target.value) : null,
-                    })
-                  }
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="100"
+                    step="1"
+                    value={formData.age?.toString() || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        age: e.target.value ? parseInt(e.target.value) : null,
+                      })
+                    }
+                    placeholder="30"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+                  />
+                </div>
                 <Select
                   label="Gender"
                   value={formData.gender}
@@ -240,7 +249,9 @@ export default function AdminEditClientProfilePage() {
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      step="0.1"
+                      min={formData.heightUnit === 'inches' ? '36' : '90'}
+                      max={formData.heightUnit === 'inches' ? '96' : '250'}
+                      step="0.5"
                       value={formData.height || ''}
                       onChange={(e) =>
                         setFormData({
@@ -249,7 +260,7 @@ export default function AdminEditClientProfilePage() {
                         })
                       }
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
-                      placeholder="72"
+                      placeholder={formData.heightUnit === 'inches' ? '72' : '183'}
                     />
                     <select
                       value={formData.heightUnit}
@@ -270,7 +281,9 @@ export default function AdminEditClientProfilePage() {
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      step="0.1"
+                      min={formData.weightUnit === 'pounds' ? '50' : '20'}
+                      max={formData.weightUnit === 'pounds' ? '500' : '250'}
+                      step="0.5"
                       value={formData.currentWeight || ''}
                       onChange={(e) =>
                         setFormData({
@@ -538,20 +551,28 @@ export default function AdminEditClientProfilePage() {
 
             <Section title="Preferences">
               <div className="space-y-4">
-                <Input
-                  label="Exercise days per week"
-                  type="number"
-                  value={formData.exerciseDaysPerWeek?.toString() || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      exerciseDaysPerWeek: e.target.value
-                        ? parseInt(e.target.value)
-                        : null,
-                    })
-                  }
-                  placeholder="3"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Exercise days per week
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="7"
+                    step="1"
+                    value={formData.exerciseDaysPerWeek?.toString() || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        exerciseDaysPerWeek: e.target.value
+                          ? parseInt(e.target.value)
+                          : null,
+                      })
+                    }
+                    placeholder="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
+                  />
+                </div>
                 <Textarea
                   label="Preferred workout days/time"
                   value={formData.preferredWorkoutDays}
