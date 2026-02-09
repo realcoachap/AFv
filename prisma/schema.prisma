@@ -39,23 +39,53 @@ model ClientProfile {
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Basic Info
+  // Personal Information
   fullName          String
   phone             String
-  dateOfBirth       DateTime?
-  emergencyContact  String?
-  emergencyPhone    String?
-
-  // Fitness Profile (to be expanded based on your intake form)
-  fitnessGoals      String?   // Text field for goals
-  medicalHistory    String?   // Any relevant medical info
-  injuries          String?   // Current or past injuries
-  activityLevel     String?   // Beginner, Intermediate, Advanced
-  
-  // Measurements (optional, can be tracked over time later)
+  email             String?
+  age               Int?
+  gender            String?              // "Male", "Female", "Prefer not to say"
+  height            Float?               // Stored in inches (convert from cm if needed)
+  heightUnit        String?              // "inches" or "centimeters"
   currentWeight     Float?
-  targetWeight      Float?
-  height            Float?
+  weightUnit        String?              // "pounds" or "kilograms"
+  
+  // Emergency Contact
+  emergencyContact        String?
+  emergencyPhone          String?
+  emergencyRelationship   String?        // "Spouse", "Parent", "Sibling", "Friend", "Other"
+  
+  // Health & Medical
+  hasMedicalConditions    Boolean?
+  medicalConditions       String?        // Description if hasMedicalConditions = true
+  isTakingMedications     Boolean?
+  medications             String?        // Description if isTakingMedications = true
+  hasInjuries             Boolean?
+  injuriesDescription     String?        // Description if hasInjuries = true
+  hasAllergies            Boolean?
+  allergies               String?        // Description if hasAllergies = true
+  fitnessLevel            String?        // "Beginner", "Intermediate", "Advanced"
+  
+  // Fitness History
+  hasWorkedOutBefore      Boolean?
+  previousExerciseTypes   String?        // Types of exercise done before
+  hasHomeEquipment        Boolean?
+  homeEquipmentTypes      String?        // Description if hasHomeEquipment = true
+  
+  // Goals
+  primaryGoal             String?        // Main fitness goal
+  secondaryGoals          String?        // Additional goals
+  targetTimeline          String?        // Timeline for achieving goals
+  
+  // Lifestyle
+  typicalActivityLevel    String?        // "Sedentary", "Light Active", "Active", "Very Active"
+  averageSleepHours       Float?
+  dietaryRestrictions     String?        // Dietary restrictions or allergies
+  
+  // Preferences
+  exerciseDaysPerWeek     Int?
+  preferredWorkoutDays    String?        // Days and times preferred
+  sessionsPerMonth        Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
