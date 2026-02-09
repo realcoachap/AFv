@@ -216,7 +216,7 @@ export default function AdminEditClientProfilePage() {
                     Age
                   </label>
                   <input
-                    type="number" inputMode="numeric"
+                    type="number"
                     inputMode="numeric"
                     min="10"
                     max="100"
