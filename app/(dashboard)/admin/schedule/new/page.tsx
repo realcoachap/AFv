@@ -12,6 +12,23 @@ interface Client {
   } | null
 }
 
+// Generate time options in 30-minute increments
+function generateTimeOptions() {
+  const times = []
+  for (let hour = 0; hour < 24; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+      const ampm = hour < 12 ? 'AM' : 'PM'
+      const hourStr = hour.toString().padStart(2, '0')
+      const minuteStr = minute.toString().padStart(2, '0')
+      const value = `${hourStr}:${minuteStr}`
+      const label = `${hour12}:${minuteStr} ${ampm}`
+      times.push({ value, label })
+    }
+  }
+  return times
+}
+
 export default function NewSessionPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -36,9 +53,17 @@ export default function NewSessionPage() {
 
   async function loadClients() {
     try {
-      const response = await fetch('/api/admin/clients')
+      // Force fresh data with cache-busting
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/admin/clients?_t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
       if (response.ok) {
         const data = await response.json()
+        console.log('📋 Loaded clients:', data.clients.length)
         setClients(data.clients)
       }
     } catch (error) {
@@ -167,15 +192,21 @@ export default function NewSessionPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Time *
                 </label>
-                <input
-                  type="time"
+                <select
                   value={formData.time}
                   onChange={(e) =>
                     setFormData({ ...formData, time: e.target.value })
                   }
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent"
-                />
+                >
+                  <option value="">Select time...</option>
+                  {generateTimeOptions().map((time) => (
+                    <option key={time.value} value={time.value}>
+                      {time.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

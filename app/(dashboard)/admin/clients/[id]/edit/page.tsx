@@ -61,11 +61,19 @@ export default function AdminEditClientProfilePage() {
 
   async function loadProfile() {
     try {
-      const response = await fetch(`/api/admin/clients/${clientId}`)
+      // Force fresh data
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/admin/clients/${clientId}?_t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
       if (response.ok) {
         const data = await response.json()
         const profile = data.client.clientProfile
         
+        console.log('📋 Loaded client profile, phone:', profile?.phone)
         setClientName(profile?.fullName || data.client.email)
         
         if (profile) {

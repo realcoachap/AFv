@@ -34,7 +34,16 @@ export async function GET(
       )
     }
 
-    return NextResponse.json({ client })
+    return NextResponse.json(
+      { client },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    )
   } catch (error) {
     console.error('Get client error:', error)
     return NextResponse.json(
