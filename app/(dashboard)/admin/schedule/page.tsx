@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import Calendar from '@/app/components/schedule/Calendar'
 import NavBar from '@/app/components/NavBar'
+import QuickBookModal from '@/app/components/schedule/QuickBookModal'
 
 interface Client {
   id: string
@@ -42,6 +43,8 @@ export default function AdminSchedulePage() {
   const [view, setView] = useState<'calendar' | 'list'>('calendar')
   const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null)
   const [sendingReminder, setSendingReminder] = useState(false)
+  const [quickBookModalOpen, setQuickBookModalOpen] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   useEffect(() => {
     loadSchedule()
@@ -199,14 +202,25 @@ export default function AdminSchedulePage() {
 
           {/* Calendar View */}
           {view === 'calendar' && (
-            <Calendar
-              appointments={appointments}
-              onSelectEvent={(event) => {
-                const apt = appointments.find((a) => a.id === event.id)
-                setSelectedEvent(apt || null)
-              }}
-              isAdmin
-            />
+            <>
+              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Tip:</strong> Click any empty time slot to quickly book a session!
+                </p>
+              </div>
+              <Calendar
+                appointments={appointments}
+                onSelectEvent={(event) => {
+                  const apt = appointments.find((a) => a.id === event.id)
+                  setSelectedEvent(apt || null)
+                }}
+                onSelectSlot={(slotInfo) => {
+                  setSelectedSlot(slotInfo)
+                  setQuickBookModalOpen(true)
+                }}
+                isAdmin
+              />
+            </>
           )}
 
           {/* List View */}
@@ -250,6 +264,23 @@ export default function AdminSchedulePage() {
               />
             </div>
           </div>
+        )}
+
+        {/* Quick Book Modal */}
+        {selectedSlot && (
+          <QuickBookModal
+            isOpen={quickBookModalOpen}
+            onClose={() => {
+              setQuickBookModalOpen(false)
+              setSelectedSlot(null)
+            }}
+            slotStart={selectedSlot.start}
+            slotEnd={selectedSlot.end}
+            onSuccess={() => {
+              loadSchedule()
+              loadStats()
+            }}
+          />
         )}
       </main>
     </div>
