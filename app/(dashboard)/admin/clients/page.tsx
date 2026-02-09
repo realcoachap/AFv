@@ -2,6 +2,7 @@ import { auth, signOut } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function AdminClientsPage({
   searchParams,
@@ -100,7 +101,10 @@ export default async function AdminClientsPage({
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-[#1A2332] text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness - Admin</h1>
+          <Link href="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image src="/logo.jpg" alt="Ascending Fitness" width={32} height={32} className="object-contain" />
+            <h1 className="text-xl font-bold">Ascending Fitness <span className="text-[#E8DCC4] text-sm">— Admin</span></h1>
+          </Link>
           <div className="flex gap-4 items-center">
             <Link
               href="/admin/dashboard"
