@@ -286,7 +286,7 @@ export default function Calendar({ appointments, onSelectEvent, onSelectSlot, is
         views={['month', 'week', 'day']}
         onSelectEvent={onSelectEvent}
         onSelectSlot={onSelectSlot}
-        selectable={isAdmin && !!onSelectSlot}
+        selectable={!!onSelectSlot}
         longPressThreshold={10}
         eventPropGetter={eventStyleGetter}
         popup
