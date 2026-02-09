@@ -67,7 +67,7 @@ export function validateProfile(data: unknown) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const formattedErrors: Record<string, string> = {}
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const field = err.path.join('.')
         formattedErrors[field] = err.message
       })

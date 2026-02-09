@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/lib/auth'
-import { prisma } from '@/app/lib/prisma'
+import { auth } from '@/auth'
+import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 /**
@@ -10,16 +9,17 @@ import { z } from 'zod'
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const appointment = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         client: {
           select: {
@@ -98,10 +98,10 @@ const updateSessionSchema = z.object({
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -121,9 +121,10 @@ export async function PUT(
     const body = await req.json()
     const validatedData = updateSessionSchema.parse(body)
 
+    const { id } = await params
     // Check if session exists
     const existing = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existing) {
@@ -143,7 +144,7 @@ export async function PUT(
     }
 
     const appointment = await prisma.appointment.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         client: {
@@ -164,7 +165,7 @@ export async function PUT(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
+        { error: 'Invalid input', details: error.issues },
         { status: 400 }
       )
     }
@@ -182,10 +183,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -205,9 +206,10 @@ export async function DELETE(
     const { searchParams } = new URL(req.url)
     const cancelReason = searchParams.get('reason')
 
+    const { id } = await params
     // Soft delete: mark as cancelled instead of actually deleting
     const appointment = await prisma.appointment.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: 'CANCELLED',
         cancelledAt: new Date(),
