@@ -55,6 +55,12 @@ export default async function ClientDashboard() {
               Schedule
             </Link>
             <Link
+              href="/client/rpg"
+              className="hover:text-[#E8DCC4] transition-colors font-bold"
+            >
+              🎮 RPG
+            </Link>
+            <Link
               href="/client/calculator"
               className="hover:text-[#E8DCC4] transition-colors"
             >
@@ -118,6 +124,34 @@ export default async function ClientDashboard() {
             </span>
           </Link>
         </div>
+
+        {/* RPG Feature Highlight */}
+        <Link 
+          href="/client/rpg" 
+          className="mt-6 block bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-2xl p-8 text-white hover:from-purple-700 hover:to-pink-700 transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                🎮 YOUR CHARACTER
+              </h3>
+              <p className="text-lg mb-3 opacity-90">
+                Track your fitness journey with an RPG-style character! Gain XP, level up, and watch your avatar evolve as you train.
+              </p>
+              <span className="inline-block bg-white text-purple-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
+                View Your Character →
+              </span>
+            </div>
+            <div className="hidden sm:block text-8xl">
+              ⚡
+            </div>
+          </div>
+        </Link>
+      </main>
+    </div>
+  )
+}
+
       </main>
     </div>
   )
