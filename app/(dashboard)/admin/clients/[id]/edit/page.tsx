@@ -669,6 +669,7 @@ function Input({
   onChange,
   placeholder,
   step,
+  inputMode,
   error,
 }: {
   label: string
@@ -677,6 +678,7 @@ function Input({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   step?: string
+  inputMode?: 'numeric' | 'decimal' | 'tel' | 'search' | 'email' | 'url' | 'text' | 'none'
   error?: string
 }) {
   return (
@@ -690,6 +692,7 @@ function Input({
         onChange={onChange}
         placeholder={placeholder}
         step={step}
+        inputMode={inputMode}
         className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#E8DCC4] focus:border-transparent ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}
