@@ -6,7 +6,6 @@
 
 import { useState, useEffect } from 'react'
 import QuestCard from './QuestCard'
-import { Sparkles, Target, Calendar, Trophy } from 'lucide-react'
 
 type Quest = {
   id: string
@@ -145,10 +144,10 @@ export default function QuestLog({ userId }: QuestLogProps) {
 
   // Tab icons
   const tabs = [
-    { id: 'all', label: 'All Quests', icon: Target, count: stats.total },
-    { id: 'daily', label: 'Daily', icon: Sparkles, count: quests.filter(q => q.type === 'daily').length },
-    { id: 'weekly', label: 'Weekly', icon: Calendar, count: quests.filter(q => q.type === 'weekly').length },
-    { id: 'monthly', label: 'Monthly', icon: Trophy, count: quests.filter(q => q.type === 'monthly').length },
+    { id: 'all', label: 'All Quests', icon: '🎯', count: stats.total },
+    { id: 'daily', label: 'Daily', icon: '✨', count: quests.filter(q => q.type === 'daily').length },
+    { id: 'weekly', label: 'Weekly', icon: '📅', count: quests.filter(q => q.type === 'weekly').length },
+    { id: 'monthly', label: 'Monthly', icon: '🏆', count: quests.filter(q => q.type === 'monthly').length },
   ]
 
   return (
@@ -168,7 +167,7 @@ export default function QuestLog({ userId }: QuestLogProps) {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm">
-            <Sparkles className="w-4 h-4" />
+            <span>✨</span>
             QUEST LOG
           </div>
           
@@ -186,26 +185,26 @@ export default function QuestLog({ userId }: QuestLogProps) {
           <StatCard 
             label="Total Quests" 
             value={stats.total} 
-            icon={Target}
+            icon="🎯"
             color="blue"
           />
           <StatCard 
             label="Completed" 
             value={stats.completed} 
-            icon={Trophy}
+            icon="🏆"
             color="green"
             highlight={stats.completed > 0}
           />
           <StatCard 
             label="In Progress" 
             value={stats.inProgress} 
-            icon={Sparkles}
+            icon="⚡"
             color="purple"
           />
           <StatCard 
             label="Completion Rate" 
             value={`${completionRate}%`} 
-            icon={Calendar}
+            icon="📊"
             color="amber"
           />
         </div>
@@ -234,7 +233,6 @@ export default function QuestLog({ userId }: QuestLogProps) {
         {/* Tabs */}
         <div className="flex flex-wrap justify-center gap-2">
           {tabs.map((tab) => {
-            const Icon = tab.icon
             const isActive = activeTab === tab.id
             
             return (
@@ -249,7 +247,7 @@ export default function QuestLog({ userId }: QuestLogProps) {
                   }
                 `}
               >
-                <Icon className="w-5 h-5" />
+                <span className="text-xl">{tab.icon}</span>
                 {tab.label}
                 <span 
                   className={`
@@ -292,13 +290,13 @@ export default function QuestLog({ userId }: QuestLogProps) {
 function StatCard({ 
   label, 
   value, 
-  icon: Icon, 
+  icon, 
   color,
   highlight = false,
 }: { 
   label: string
   value: string | number
-  icon: React.ElementType
+  icon: string
   color: 'blue' | 'green' | 'purple' | 'amber'
   highlight?: boolean
 }) {
@@ -317,8 +315,8 @@ function StatCard({
       `}
     >
       <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-white/10">
-          <Icon className="w-5 h-5 text-white" />
+        <div className="p-2 rounded-lg bg-white/10 text-2xl">
+          {icon}
         </div>
         <div>
           <div className="text-2xl font-bold text-white">{value}</div>
