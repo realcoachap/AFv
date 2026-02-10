@@ -53,7 +53,7 @@ export default function RealisticAvatarV2({
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
-        camera={{ position: [0, 0.5, 4.5], fov: 40 }}
+        camera={{ position: [0, -0.5, 6], fov: 35 }}
         gl={{ 
           antialias: true, 
           alpha: true,
@@ -77,7 +77,7 @@ export default function RealisticAvatarV2({
         
         {/* Dramatic ground shadows */}
         <ContactShadows
-          position={[0, -2.2, 0]}
+          position={[0, -3, 0]}
           opacity={0.6}
           scale={15}
           blur={3}
@@ -158,7 +158,7 @@ function Character({
   const scheme = colors[colorScheme as keyof typeof colors] || colors.navy
 
   return (
-    <group ref={groupRef} position={[0, -1.8, 0]}>
+    <group ref={groupRef} position={[0, -2.2, 0]}>
       {/* Aura */}
       {discipline > 35 && <AuraEffect intensity={discipline / 100} color={scheme.accent} />}
       
@@ -187,7 +187,7 @@ function Character({
         <AnatomicalLeg side="right" strength={strength} />
       </group>
       
-      <LevelBadge level={level} position={[1.0, 2.2, 0]} />
+      <LevelBadge level={level} position={[1.0, 1.5, 0]} />
     </group>
   )
 }
