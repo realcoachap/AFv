@@ -44,7 +44,10 @@ export async function updateStreak(userId: string) {
       return {
         streakUpdated: false,
         currentStreak: character.currentStreak,
+        longestStreak: character.longestStreak,
+        streakBroken: false,
         bonusAwarded: false,
+        disciplineGained: false,
       }
     } else if (daysDiff === 1) {
       // Next day - streak continues!
