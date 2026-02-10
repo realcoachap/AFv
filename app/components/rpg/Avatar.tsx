@@ -1,26 +1,27 @@
 'use client'
 
 /**
- * Avatar Component - Wrapper with 2D/3D Toggle
- * Easily switch between 2D SVG and 3D React Three Fiber
+ * Avatar Component - Wrapper with Premium/3D Toggle
+ * Uses PremiumAvatar (2D stylized) by default for best aesthetics
  */
 
 import { Suspense, lazy } from 'react'
-import Avatar2D from './Avatar2D'
+import PremiumAvatar from './PremiumAvatar'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 
-// Lazy load 3D component (better performance)
+// Lazy load 3D component (heavy, only if explicitly requested)
 const Avatar3D = lazy(() => import('./Avatar3D'))
 
 type AvatarProps = {
+  level?: number
   strength: number
   endurance: number
   discipline: number
   colorScheme?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  use3D?: boolean // Feature toggle
-  autoRotate?: boolean // 3D only
-  customization?: AvatarCustomization // Avatar appearance
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'share'
+  use3D?: boolean
+  autoRotate?: boolean
+  customization?: AvatarCustomization
 }
 
 // Loading fallback for 3D
@@ -33,16 +34,17 @@ function Avatar3DFallback() {
 }
 
 export default function Avatar({
+  level = 1,
   strength,
   endurance,
   discipline,
   colorScheme = 'navy',
   size = 'lg',
-  use3D = true, // Default to 3D (set to false to use 2D)
+  use3D = false, // Default to Premium 2D for better aesthetics
   autoRotate = true,
   customization,
 }: AvatarProps) {
-  // Use 3D by default, with easy toggle
+  // Use 3D only if explicitly requested (for clients who want it)
   if (use3D) {
     return (
       <Suspense fallback={<Avatar3DFallback />}>
@@ -51,7 +53,7 @@ export default function Avatar({
           endurance={endurance}
           discipline={discipline}
           colorScheme={colorScheme}
-          size={size}
+          size={size === 'share' ? 'xl' : size}
           autoRotate={autoRotate}
           customization={customization}
         />
@@ -59,14 +61,16 @@ export default function Avatar({
     )
   }
   
-  // Fallback to 2D
+  // Default: Use Premium Avatar (beautiful 2D stylized)
   return (
-    <Avatar2D
+    <PremiumAvatar
+      level={level}
       strength={strength}
       endurance={endurance}
       discipline={discipline}
       colorScheme={colorScheme}
       size={size}
+      customization={customization}
     />
   )
 }
