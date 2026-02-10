@@ -248,7 +248,7 @@ function Head({ discipline, customization }: { discipline: number; customization
       
       {/* Nose */}
       <mesh position={[0, 0.02, 0.35]} castShadow>
-        <roundedBoxGeometry args={[0.08, 0.15, 0.08]} />
+        <boxGeometry args={[0.08, 0.15, 0.08]} />
         <primitive object={skinMaterial} attach="material" />
       </mesh>
       
