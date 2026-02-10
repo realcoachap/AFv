@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Avatar from '@/app/components/rpg/Avatar'
 import { calculatePowerLevel } from '@/app/lib/rpg/stats'
+import { parseAvatarConfig } from '@/app/lib/rpg/customization'
 
 export default async function AdminAvatarsPage() {
   const session = await auth()
@@ -53,6 +54,7 @@ export default async function AdminAvatarsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {clients.map((client) => {
               const char = client.rpgCharacter!
+              const customization = parseAvatarConfig(char.avatarConfig)
               const powerLevel = calculatePowerLevel(
                 char.strength,
                 char.endurance,
@@ -70,10 +72,11 @@ export default async function AdminAvatarsPage() {
                       strength={char.strength}
                       endurance={char.endurance}
                       discipline={char.discipline}
-                      colorScheme="navy"
+                      colorScheme={customization.colorScheme}
                       size="lg"
                       use3D={true}
                       autoRotate={true}
+                      customization={customization}
                     />
                   </div>
 

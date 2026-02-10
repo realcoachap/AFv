@@ -7,6 +7,7 @@
 
 import { Suspense, lazy } from 'react'
 import Avatar2D from './Avatar2D'
+import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 
 // Lazy load 3D component (better performance)
 const Avatar3D = lazy(() => import('./Avatar3D'))
@@ -19,6 +20,7 @@ type AvatarProps = {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   use3D?: boolean // Feature toggle
   autoRotate?: boolean // 3D only
+  customization?: AvatarCustomization // Avatar appearance
 }
 
 // Loading fallback for 3D
@@ -38,6 +40,7 @@ export default function Avatar({
   size = 'lg',
   use3D = true, // Default to 3D (set to false to use 2D)
   autoRotate = true,
+  customization,
 }: AvatarProps) {
   // Use 3D by default, with easy toggle
   if (use3D) {
@@ -50,6 +53,7 @@ export default function Avatar({
           colorScheme={colorScheme}
           size={size}
           autoRotate={autoRotate}
+          customization={customization}
         />
       </Suspense>
     )

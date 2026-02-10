@@ -1,6 +1,8 @@
 import Avatar from './Avatar'
 import { getLevelProgress } from '@/app/lib/rpg/levels'
 import { calculatePowerLevel } from '@/app/lib/rpg/stats'
+import { parseAvatarConfig } from '@/app/lib/rpg/customization'
+import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 
 type CharacterCardProps = {
   level: number
@@ -12,6 +14,7 @@ type CharacterCardProps = {
   longestStreak: number
   userName?: string
   use3D?: boolean
+  avatarConfig?: any // JSON from database
 }
 
 export default function CharacterCard({
@@ -24,7 +27,10 @@ export default function CharacterCard({
   longestStreak,
   userName,
   use3D = true,
+  avatarConfig,
 }: CharacterCardProps) {
+  // Parse avatar customization
+  const customization = parseAvatarConfig(avatarConfig)
   const progress = getLevelProgress(xp)
   const powerLevel = calculatePowerLevel(strength, endurance, discipline)
 
@@ -38,10 +44,11 @@ export default function CharacterCard({
               strength={strength}
               endurance={endurance}
               discipline={discipline}
-              colorScheme="navy"
+              colorScheme={customization.colorScheme}
               size="xl"
               use3D={use3D}
               autoRotate={true}
+              customization={customization}
             />
           </div>
           {userName && (

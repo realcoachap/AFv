@@ -72,7 +72,18 @@ export default async function ClientRPGPage() {
           currentStreak={character.currentStreak}
           longestStreak={character.longestStreak}
           userName={profile?.fullName}
+          avatarConfig={character.avatarConfig}
         />
+
+        {/* Customize Button */}
+        <div className="flex justify-center">
+          <Link
+            href="/client/rpg/customize"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg transition-all"
+          >
+            🎨 Customize Your Avatar
+          </Link>
+        </div>
 
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
