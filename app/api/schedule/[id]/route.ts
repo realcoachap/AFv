@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { onSessionComplete } from '@/app/lib/rpg/session-integration'
 
 /**
  * GET /api/schedule/[id]
@@ -160,6 +161,30 @@ export async function PUT(
         },
       },
     })
+
+    // Trigger RPG updates if session was just marked as COMPLETED
+    if (
+      validatedData.status === 'COMPLETED' &&
+      existing.status !== 'COMPLETED'
+    ) {
+      try {
+        const rpgResult = await onSessionComplete(
+          id,
+          appointment.clientId,
+          appointment.sessionType
+        )
+        
+        // Optionally attach RPG result to response
+        return NextResponse.json({
+          appointment,
+          rpg: rpgResult.success ? rpgResult : undefined,
+        })
+      } catch (rpgError) {
+        console.error('RPG update error (non-fatal):', rpgError)
+        // Don't fail the request if RPG update fails
+        return NextResponse.json({ appointment })
+      }
+    }
 
     return NextResponse.json({ appointment })
   } catch (error) {
