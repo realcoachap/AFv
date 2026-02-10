@@ -106,15 +106,19 @@ function Character3D({
     }
   })
   
-  // Color schemes
-  const colors = {
+  // Color schemes - Use customization color scheme!
+  const colorSchemes: Record<string, { primary: string; secondary: string; accent: string }> = {
     navy: { primary: '#1A2332', secondary: '#E8DCC4', accent: '#00D9FF' },
     black: { primary: '#000000', secondary: '#FFFFFF', accent: '#FF0000' },
     red: { primary: '#DC2626', secondary: '#FEE2E2', accent: '#991B1B' },
     blue: { primary: '#2563EB', secondary: '#DBEAFE', accent: '#1E40AF' },
+    green: { primary: '#059669', secondary: '#D1FAE5', accent: '#047857' },
+    purple: { primary: '#7C3AED', secondary: '#EDE9FE', accent: '#6D28D9' },
+    orange: { primary: '#EA580C', secondary: '#FED7AA', accent: '#C2410C' },
   }
   
-  const scheme = colors[colorScheme as keyof typeof colors] || colors.navy
+  // Use color scheme from customization
+  const scheme = colorSchemes[config.colorScheme] || colorSchemes.navy
   
   // Use customized skin tone
   const skinColor = config.skinTone
@@ -363,50 +367,179 @@ function Character3D({
         <meshStandardMaterial color={skinColor} />
       </mesh>
       
-      {/* Torso (shirt) */}
-      <mesh position={[0, 1.2, 0]} castShadow>
-        <boxGeometry args={[0.6 * body.shoulderWidth, 0.9, 0.4 * body.chestDepth]} />
-        <meshStandardMaterial color={scheme.primary} />
-      </mesh>
+      {/* Torso (shirt) - Different styles based on outfit */}
+      {config.outfit === 'tank' && (
+        <>
+          {/* Tank top - no shoulders, narrower */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.5 * body.shoulderWidth, 0.9, 0.4 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Tank straps */}
+          <mesh position={[-0.15, 1.5, 0]} castShadow>
+            <boxGeometry args={[0.08, 0.4, 0.4 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          <mesh position={[0.15, 1.5, 0]} castShadow>
+            <boxGeometry args={[0.08, 0.4, 0.4 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+        </>
+      )}
       
-      {/* Chest accent stripe */}
-      <mesh position={[0, 1.4, 0.21 * body.chestDepth]}>
-        <boxGeometry args={[0.5 * body.shoulderWidth, 0.08, 0.02]} />
-        <meshStandardMaterial color={scheme.accent} emissive={scheme.accent} emissiveIntensity={0.5} />
-      </mesh>
+      {config.outfit === 'tee' && (
+        <>
+          {/* T-shirt - standard short sleeves */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.6 * body.shoulderWidth, 0.9, 0.4 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Short sleeves */}
+          <mesh position={[-0.35 * body.shoulderWidth, 1.4, 0]} castShadow>
+            <cylinderGeometry args={[0.11 * body.armThickness, 0.11 * body.armThickness, 0.25, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          <mesh position={[0.35 * body.shoulderWidth, 1.4, 0]} castShadow>
+            <cylinderGeometry args={[0.11 * body.armThickness, 0.11 * body.armThickness, 0.25, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+        </>
+      )}
       
-      {/* Arms */}
-      {/* Left shoulder */}
-      <mesh position={[-0.35 * body.shoulderWidth, 1.5, 0]} castShadow>
-        <sphereGeometry args={[0.12 * body.armThickness, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
-      </mesh>
-      {/* Left upper arm */}
-      <mesh position={[-0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
-      </mesh>
-      {/* Left forearm */}
-      <mesh position={[-0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
-        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
-      </mesh>
+      {config.outfit === 'compression' && (
+        <>
+          {/* Compression shirt - tight, long sleeves */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.58 * body.shoulderWidth, 0.95, 0.38 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Long tight sleeves (cover whole arm) */}
+          <mesh position={[-0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.09 * body.armThickness, 0.09 * body.armThickness, 0.8, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          <mesh position={[0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.09 * body.armThickness, 0.09 * body.armThickness, 0.8, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+        </>
+      )}
       
-      {/* Right shoulder */}
-      <mesh position={[0.35 * body.shoulderWidth, 1.5, 0]} castShadow>
-        <sphereGeometry args={[0.12 * body.armThickness, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
-      </mesh>
-      {/* Right upper arm */}
-      <mesh position={[0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
-      </mesh>
-      {/* Right forearm */}
-      <mesh position={[0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
-        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
-      </mesh>
+      {config.outfit === 'hoodie' && (
+        <>
+          {/* Hoodie - oversized with hood */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.65 * body.shoulderWidth, 1.0, 0.45 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Hood */}
+          <mesh position={[0, 2.1, -0.15]} castShadow>
+            <boxGeometry args={[0.4, 0.4, 0.3]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Long sleeves */}
+          <mesh position={[-0.38 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.12 * body.armThickness, 0.12 * body.armThickness, 0.8, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          <mesh position={[0.38 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.12 * body.armThickness, 0.12 * body.armThickness, 0.8, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+        </>
+      )}
+      
+      {config.outfit === 'jersey' && (
+        <>
+          {/* Jersey - sporty with number */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.62 * body.shoulderWidth, 0.95, 0.42 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Jersey sleeves */}
+          <mesh position={[-0.36 * body.shoulderWidth, 1.4, 0]} castShadow>
+            <cylinderGeometry args={[0.12 * body.armThickness, 0.12 * body.armThickness, 0.3, 16]} />
+            <meshStandardMaterial color={scheme.secondary} />
+          </mesh>
+          <mesh position={[0.36 * body.shoulderWidth, 1.4, 0]} castShadow>
+            <cylinderGeometry args={[0.12 * body.armThickness, 0.12 * body.armThickness, 0.3, 16]} />
+            <meshStandardMaterial color={scheme.secondary} />
+          </mesh>
+          {/* Number on chest */}
+          <mesh position={[0, 1.3, 0.22 * body.chestDepth]}>
+            <boxGeometry args={[0.15, 0.2, 0.02]} />
+            <meshStandardMaterial color={scheme.accent} emissive={scheme.accent} emissiveIntensity={0.8} />
+          </mesh>
+        </>
+      )}
+      
+      {config.outfit === 'muscle' && (
+        <>
+          {/* Muscle tee - cut off, shows more arms */}
+          <mesh position={[0, 1.2, 0]} castShadow>
+            <boxGeometry args={[0.55 * body.shoulderWidth, 0.85, 0.38 * body.chestDepth]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          {/* Very short sleeves */}
+          <mesh position={[-0.32 * body.shoulderWidth, 1.5, 0]} castShadow>
+            <cylinderGeometry args={[0.1 * body.armThickness, 0.1 * body.armThickness, 0.15, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+          <mesh position={[0.32 * body.shoulderWidth, 1.5, 0]} castShadow>
+            <cylinderGeometry args={[0.1 * body.armThickness, 0.1 * body.armThickness, 0.15, 16]} />
+            <meshStandardMaterial color={scheme.primary} />
+          </mesh>
+        </>
+      )}
+      
+      {/* Chest accent stripe (except for compression/hoodie which are plain) */}
+      {!['compression', 'hoodie'].includes(config.outfit) && (
+        <mesh position={[0, 1.4, 0.21 * body.chestDepth]}>
+          <boxGeometry args={[0.5 * body.shoulderWidth, 0.08, 0.02]} />
+          <meshStandardMaterial color={scheme.accent} emissive={scheme.accent} emissiveIntensity={0.5} />
+        </mesh>
+      )}
+      
+      {/* Arms (skin - only show if not covered by outfit) */}
+      {!['compression', 'hoodie'].includes(config.outfit) && (
+        <>
+          {/* Left upper arm */}
+          <mesh position={[-0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+          {/* Left forearm */}
+          <mesh position={[-0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
+            <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+          
+          {/* Right upper arm */}
+          <mesh position={[0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+          {/* Right forearm */}
+          <mesh position={[0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
+            <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+        </>
+      )}
+      
+      {/* Forearms for compression/hoodie (just hands showing) */}
+      {['compression', 'hoodie'].includes(config.outfit) && (
+        <>
+          <mesh position={[-0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
+            <cylinderGeometry args={[0.06 * body.armThickness, 0.05 * body.armThickness, 0.3, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+          <mesh position={[0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
+            <cylinderGeometry args={[0.06 * body.armThickness, 0.05 * body.armThickness, 0.3, 16]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+        </>
+      )}
       
       {/* Waist/shorts */}
       <mesh position={[0, 0.65, 0]} castShadow>
