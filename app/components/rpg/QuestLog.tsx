@@ -121,7 +121,7 @@ export default function QuestLog({ userId }: QuestLogProps) {
     total: quests.length,
     completed: quests.filter(q => q.isCompleted).length,
     inProgress: quests.filter(q => !q.isCompleted && q.progress.current > 0).length,
-    available: quests.filter(q =㸊  0).length,
+    available: quests.filter(q => q.progress.current === 0).length,
   }
 
   const completionRate = Math.round((stats.completed / stats.total) * 100)
