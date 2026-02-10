@@ -180,15 +180,182 @@ function Character3D({
         <meshStandardMaterial color={skinColor} />
       </mesh>
       
+      {/* Hair */}
+      {config.hairStyle !== 'bald' && (
+        <>
+          {/* Hair - different styles */}
+          {config.hairStyle === 'short' && (
+            <mesh position={[0, 2.4, 0]} castShadow>
+              <sphereGeometry args={[0.38, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+              <meshStandardMaterial color={config.hairColor} />
+            </mesh>
+          )}
+          {config.hairStyle === 'buzz' && (
+            <mesh position={[0, 2.38, 0]} castShadow>
+              <sphereGeometry args={[0.36, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
+              <meshStandardMaterial color={config.hairColor} />
+            </mesh>
+          )}
+          {config.hairStyle === 'medium' && (
+            <>
+              <mesh position={[0, 2.42, 0]} castShadow>
+                <sphereGeometry args={[0.4, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.7]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              {/* Side hair */}
+              <mesh position={[0.25, 2.15, 0]} castShadow>
+                <boxGeometry args={[0.1, 0.3, 0.3]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              <mesh position={[-0.25, 2.15, 0]} castShadow>
+                <boxGeometry args={[0.1, 0.3, 0.3]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+            </>
+          )}
+          {config.hairStyle === 'long' && (
+            <>
+              <mesh position={[0, 2.42, 0]} castShadow>
+                <sphereGeometry args={[0.41, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.7]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              {/* Long side hair */}
+              <mesh position={[0.28, 2.0, 0]} castShadow>
+                <boxGeometry args={[0.12, 0.5, 0.35]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              <mesh position={[-0.28, 2.0, 0]} castShadow>
+                <boxGeometry args={[0.12, 0.5, 0.35]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+            </>
+          )}
+          {config.hairStyle === 'mohawk' && (
+            <mesh position={[0, 2.5, 0]} castShadow rotation={[0, 0, 0]}>
+              <boxGeometry args={[0.15, 0.5, 0.4]} />
+              <meshStandardMaterial color={config.hairColor} />
+            </mesh>
+          )}
+          {config.hairStyle === 'afro' && (
+            <mesh position={[0, 2.35, 0]} castShadow>
+              <sphereGeometry args={[0.5, 32, 32]} />
+              <meshStandardMaterial color={config.hairColor} />
+            </mesh>
+          )}
+          {config.hairStyle === 'dreads' && (
+            <>
+              <mesh position={[0, 2.42, 0]} castShadow>
+                <sphereGeometry args={[0.38, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              {/* Dread strands */}
+              {[-0.25, -0.12, 0, 0.12, 0.25].map((x, i) => (
+                <mesh key={i} position={[x, 1.8, 0]} castShadow>
+                  <cylinderGeometry args={[0.03, 0.03, 0.6, 8]} />
+                  <meshStandardMaterial color={config.hairColor} />
+                </mesh>
+              ))}
+            </>
+          )}
+          {config.hairStyle === 'ponytail' && (
+            <>
+              <mesh position={[0, 2.42, 0]} castShadow>
+                <sphereGeometry args={[0.39, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.65]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              {/* Ponytail back */}
+              <mesh position={[0, 2.1, -0.25]} castShadow>
+                <cylinderGeometry args={[0.06, 0.04, 0.4, 16]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+            </>
+          )}
+          {config.hairStyle === 'spiky' && (
+            <>
+              <mesh position={[0, 2.42, 0]} castShadow>
+                <sphereGeometry args={[0.37, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+                <meshStandardMaterial color={config.hairColor} />
+              </mesh>
+              {/* Spikes */}
+              {[-0.15, 0, 0.15].map((x, i) => (
+                <mesh key={i} position={[x, 2.6, 0]} castShadow>
+                  <coneGeometry args={[0.08, 0.25, 8]} />
+                  <meshStandardMaterial color={config.hairColor} />
+                </mesh>
+              ))}
+            </>
+          )}
+        </>
+      )}
+      
       {/* Eyes */}
       <mesh position={[-0.12, 2.25, 0.3]}>
         <sphereGeometry args={[0.05, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <meshStandardMaterial color={config.eyeColor} />
       </mesh>
       <mesh position={[0.12, 2.25, 0.3]}>
         <sphereGeometry args={[0.05, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <meshStandardMaterial color={config.eyeColor} />
       </mesh>
+      
+      {/* Facial Hair */}
+      {config.facialHair === 'stubble' && (
+        <>
+          <mesh position={[0, 2.05, 0.32]}>
+            <boxGeometry args={[0.25, 0.12, 0.05]} />
+            <meshStandardMaterial color={config.hairColor} opacity={0.7} transparent />
+          </mesh>
+        </>
+      )}
+      {config.facialHair === 'goatee' && (
+        <mesh position={[0, 2.0, 0.33]}>
+          <boxGeometry args={[0.15, 0.15, 0.06]} />
+          <meshStandardMaterial color={config.hairColor} />
+        </mesh>
+      )}
+      {config.facialHair === 'beard' && (
+        <>
+          <mesh position={[0, 2.05, 0.3]}>
+            <boxGeometry args={[0.35, 0.25, 0.15]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+          {/* Chin beard extension */}
+          <mesh position={[0, 1.95, 0.32]}>
+            <boxGeometry args={[0.3, 0.15, 0.12]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+        </>
+      )}
+      {config.facialHair === 'mustache' && (
+        <>
+          <mesh position={[-0.1, 2.12, 0.34]}>
+            <boxGeometry args={[0.12, 0.06, 0.04]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+          <mesh position={[0.1, 2.12, 0.34]}>
+            <boxGeometry args={[0.12, 0.06, 0.04]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+        </>
+      )}
+      {config.facialHair === 'van-dyke' && (
+        <>
+          {/* Mustache */}
+          <mesh position={[-0.1, 2.12, 0.34]}>
+            <boxGeometry args={[0.12, 0.06, 0.04]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+          <mesh position={[0.1, 2.12, 0.34]}>
+            <boxGeometry args={[0.12, 0.06, 0.04]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+          {/* Goatee */}
+          <mesh position={[0, 2.0, 0.33]}>
+            <boxGeometry args={[0.12, 0.15, 0.06]} />
+            <meshStandardMaterial color={config.hairColor} />
+          </mesh>
+        </>
+      )}
       
       {/* Neck */}
       <mesh position={[0, 1.85, 0]} castShadow>
@@ -315,12 +482,12 @@ export default function Avatar3D({
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
-        camera={{ position: [0, 0.5, 4.5], fov: 45 }}
+        camera={{ position: [0, 0.2, 5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >
         <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 0.5, 4.5]} />
+          <PerspectiveCamera makeDefault position={[0, 0.2, 5]} />
           
           {/* Lighting */}
           <ambientLight intensity={0.6} />
