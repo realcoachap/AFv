@@ -1,4 +1,4 @@
-import Avatar from './Avatar'
+import AvatarV2 from './AvatarV2'
 import { getLevelProgress } from '@/app/lib/rpg/levels'
 import { calculatePowerLevel } from '@/app/lib/rpg/stats'
 
@@ -32,10 +32,22 @@ export default function CharacterCard({
         {/* Left: Avatar & Name */}
         <div className="flex flex-col items-center justify-center">
           <div className="mb-4">
-            <Avatar
+            <AvatarV2
               strength={strength}
               endurance={endurance}
               discipline={discipline}
+              config={{
+                hairStyle: 'short',
+                hairColor: '#2C1810',
+                skinTone: '#F0D0B0',
+                outfit: 'tee',
+                colorScheme: 'navy',
+                accessories: {
+                  headband: discipline >= 50,
+                  wristbands: strength >= 50,
+                  watch: discipline >= 25,
+                },
+              }}
               size="xl"
             />
           </div>
