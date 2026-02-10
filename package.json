@@ -9,7 +9,7 @@
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate"
-  },,
+  },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
