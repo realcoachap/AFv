@@ -6,6 +6,7 @@ import { calculatePowerLevel } from '@/app/lib/rpg/stats'
 import Link from 'next/link'
 import InitializeCharacterButton from './InitializeCharacterButton'
 import AwardXPButton from './AwardXPButton'
+import SetStatsButton from './SetStatsButton'
 
 export default async function AdminRPGDemoPage() {
   const session = await auth()
@@ -216,6 +217,33 @@ export default async function AdminRPGDemoPage() {
                             label="+ 1000 XP"
                             variant="legendary"
                           />
+                          
+                          {/* Stat Preset Buttons */}
+                          <div className="border-t border-gray-300 pt-2 mt-2">
+                            <p className="text-xs font-semibold text-gray-600 mb-1">Test Avatar:</p>
+                            <div className="flex flex-col gap-1">
+                              <SetStatsButton
+                                userId={client.id}
+                                userName={client.clientProfile?.fullName || client.email}
+                                preset="strength"
+                              />
+                              <SetStatsButton
+                                userId={client.id}
+                                userName={client.clientProfile?.fullName || client.email}
+                                preset="cardio"
+                              />
+                              <SetStatsButton
+                                userId={client.id}
+                                userName={client.clientProfile?.fullName || client.email}
+                                preset="balanced"
+                              />
+                              <SetStatsButton
+                                userId={client.id}
+                                userName={client.clientProfile?.fullName || client.email}
+                                preset="reset"
+                              />
+                            </div>
+                          </div>
                         </>
                       )}
                     </div>
