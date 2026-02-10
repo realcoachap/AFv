@@ -135,37 +135,45 @@ export function getStatLabels(strength: number, endurance: number, discipline: n
 }
 
 /**
- * Update stats based on session type
+ * Update stats based on focus type (STRENGTH, CARDIO, or BALANCED)
  */
-export async function updateStatsForSession(userId: string, sessionType: string) {
-  // Map session types to stat gains
+export async function updateStatsForSession(userId: string, focusType: string) {
   const statGains: { strength?: number; endurance?: number } = {}
 
-  // Determine stat gains based on session type
-  const lowerType = sessionType.toLowerCase()
+  const upperType = focusType.toUpperCase()
   
-  if (
-    lowerType.includes('strength') ||
-    lowerType.includes('weights') ||
-    lowerType.includes('resistance') ||
-    lowerType.includes('lifting')
-  ) {
+  // Use explicit focus type values
+  if (upperType === 'STRENGTH') {
     statGains.strength = STAT_CONFIG.STRENGTH_PER_SESSION
-  }
-  
-  if (
-    lowerType.includes('cardio') ||
-    lowerType.includes('running') ||
-    lowerType.includes('endurance') ||
-    lowerType.includes('hiit')
-  ) {
+  } else if (upperType === 'CARDIO') {
     statGains.endurance = STAT_CONFIG.ENDURANCE_PER_SESSION
-  }
-
-  // Default: assume balanced session (both stats gain half)
-  if (!statGains.strength && !statGains.endurance) {
+  } else if (upperType === 'BALANCED') {
+    // Balanced gives both
     statGains.strength = 1
     statGains.endurance = 1
+  } else {
+    // Fallback: check for keywords (for backward compatibility)
+    const lowerType = focusType.toLowerCase()
+    
+    if (
+      lowerType.includes('strength') ||
+      lowerType.includes('weights') ||
+      lowerType.includes('resistance') ||
+      lowerType.includes('lifting')
+    ) {
+      statGains.strength = STAT_CONFIG.STRENGTH_PER_SESSION
+    } else if (
+      lowerType.includes('cardio') ||
+      lowerType.includes('running') ||
+      lowerType.includes('endurance') ||
+      lowerType.includes('hiit')
+    ) {
+      statGains.endurance = STAT_CONFIG.ENDURANCE_PER_SESSION
+    } else {
+      // True default: balanced
+      statGains.strength = 1
+      statGains.endurance = 1
+    }
   }
 
   // Apply stat gains

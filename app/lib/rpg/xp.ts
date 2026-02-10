@@ -112,10 +112,10 @@ export async function initializeCharacter(userId: string) {
       data: {
         userId,
         level: 1,
-        xp: 50, // Start at 50 XP (not 0) - psychological boost
+        xp: 0, // Start at 0 XP
         strength: 0,
         endurance: 0,
-        discipline: 5, // Start with 5 discipline for signing up
+        discipline: 0, // Start at 0, grow with streaks
         currentStreak: 0,
         longestStreak: 0,
         avatarConfig: {
@@ -128,15 +128,7 @@ export async function initializeCharacter(userId: string) {
       },
     })
 
-    // Log initial XP
-    await prisma.rPGXPLog.create({
-      data: {
-        userId,
-        amount: 50,
-        source: 'character_creation',
-        note: 'Welcome bonus!',
-      },
-    })
+    // No initial XP - start from zero
 
     return { success: true, character }
   } catch (error) {
