@@ -807,8 +807,8 @@ function AuraEffect({ intensity, color }: { intensity: number; color: string }) 
   return (
     <points ref={particlesRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={particles.count} array={particles.positions} itemSize={3} />
-        <bufferAttribute attach="attributes-color" count={particles.count} array={particles.colors} itemSize={3} />
+        <bufferAttribute attach="attributes-position" args={[particles.positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[particles.colors, 3]} />
       </bufferGeometry>
       <pointsMaterial size={0.06} vertexColors transparent opacity={0.5} blending={THREE.AdditiveBlending} sizeAttenuation />
     </points>
