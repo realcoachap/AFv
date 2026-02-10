@@ -263,12 +263,12 @@ function Head({ discipline, customization }: { discipline: number; customization
       <Hair style={customization?.hairStyle || 'short'} color={hairColor} />
       
       {/* Ears */}
-      <mesh position={[-0.35, 0, 0]} castShadow>
-        <capsuleGeometry args={[0.08, 0.12, 4, 8]} rotation={[0, 0, Math.PI / 2]} />
+      <mesh position={[-0.35, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <capsuleGeometry args={[0.08, 0.12, 4, 8]} />
         <primitive object={skinMaterial} attach="material" />
       </mesh>
-      <mesh position={[0.35, 0, 0]} castShadow>
-        <capsuleGeometry args={[0.08, 0.12, 4, 8]} rotation={[0, 0, Math.PI / 2]} />
+      <mesh position={[0.35, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <capsuleGeometry args={[0.08, 0.12, 4, 8]} />
         <primitive object={skinMaterial} attach="material" />
       </mesh>
     </group>
