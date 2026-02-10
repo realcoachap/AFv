@@ -116,6 +116,10 @@ model Appointment {
   sessionType SessionType @default(ONE_ON_ONE)
   location    String?     // "LA Fitness", "Client Home", "Virtual", etc.
   
+  // RPG Integration - Workout Focus
+  focusType   FocusType?  // RPG stat focus: STRENGTH, CARDIO, or BALANCED
+  workoutType WorkoutType @default(COACHED) // COACHED (with trainer) or SELF_LOGGED (solo workout)
+  
   // Status tracking
   status    AppointmentStatus @default(PENDING_APPROVAL)
   
@@ -164,6 +168,17 @@ enum SessionType {
   GROUP           // Group training class
   ASSESSMENT      // Initial assessment / consultation
   CHECK_IN        // Progress check-in / weigh-in
+}
+
+enum FocusType {
+  STRENGTH  // Strength training focus → +1 Strength
+  CARDIO    // Cardio/endurance focus → +1 Endurance
+  BALANCED  // Balanced workout → +1 both
+}
+
+enum WorkoutType {
+  COACHED      // Session with coach (100 XP)
+  SELF_LOGGED  // Client self-logged workout (75 XP)
 }
 
 // ========================================

@@ -6,6 +6,7 @@ import { format, parseISO } from 'date-fns'
 import Calendar from '@/app/components/schedule/Calendar'
 import NavBar from '@/app/components/NavBar'
 import ClientQuickBookModal from '@/app/components/schedule/ClientQuickBookModal'
+import LogWorkoutModal from '@/app/components/schedule/LogWorkoutModal'
 
 interface Appointment {
   id: string
@@ -24,6 +25,7 @@ export default function ClientSchedulePage() {
   const [view, setView] = useState<'calendar' | 'list'>('calendar')
   const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null)
   const [quickBookModalOpen, setQuickBookModalOpen] = useState(false)
+  const [logWorkoutModalOpen, setLogWorkoutModalOpen] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null)
 
   useEffect(() => {
@@ -89,9 +91,18 @@ export default function ClientSchedulePage() {
                 href="/client/schedule/book"
                 className="px-3 sm:px-4 py-2 bg-[#E8DCC4] text-[#1A2332] rounded-lg font-semibold text-sm sm:text-base hover:bg-[#D8CCA4] transition-colors text-center whitespace-nowrap"
               >
-                <span className="sm:hidden">+ Book</span>
-                <span className="hidden sm:inline">+ Book Session</span>
+                <span className="sm:hidden">📅 Book</span>
+                <span className="hidden sm:inline">📅 Book Session</span>
               </Link>
+              
+              {/* Log Workout Button */}
+              <button
+                onClick={() => setLogWorkoutModalOpen(true)}
+                className="px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold text-sm sm:text-base hover:from-purple-700 hover:to-pink-700 transition-colors text-center whitespace-nowrap"
+              >
+                <span className="sm:hidden">💪 Log</span>
+                <span className="hidden sm:inline">💪 Log Workout</span>
+              </button>
               
               {/* View Toggle */}
               <div className="flex gap-1 sm:gap-2 border border-gray-300 rounded-lg overflow-hidden">
@@ -205,6 +216,16 @@ export default function ClientSchedulePage() {
             slotStart={selectedSlot.start}
             slotEnd={selectedSlot.end}
             onSuccess={() => {
+              loadSchedule()
+            }}
+          />
+        )}
+        
+        {/* Log Workout Modal */}
+        {logWorkoutModalOpen && (
+          <LogWorkoutModal
+            onClose={() => {
+              setLogWorkoutModalOpen(false)
               loadSchedule()
             }}
           />

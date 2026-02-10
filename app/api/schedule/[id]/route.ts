@@ -171,7 +171,8 @@ export async function PUT(
         const rpgResult = await onSessionComplete(
           id,
           appointment.clientId,
-          appointment.sessionType
+          appointment.focusType || undefined,
+          appointment.workoutType
         )
         
         // Optionally attach RPG result to response

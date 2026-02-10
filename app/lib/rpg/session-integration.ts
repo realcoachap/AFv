@@ -36,7 +36,8 @@ export type SessionCompletionResult = {
 export async function onSessionComplete(
   sessionId: string,
   clientId: string,
-  sessionType?: string
+  focusType?: string,
+  workoutType?: string
 ): Promise<SessionCompletionResult> {
   try {
     // Ensure character exists (auto-initialize if needed)
@@ -64,12 +65,14 @@ export async function onSessionComplete(
     }
 
     // 1. Award XP for session completion
+    // 100 XP for coached sessions, 75 XP for self-logged
+    const xpAmount = workoutType === 'SELF_LOGGED' ? 75 : XP_REWARDS.SESSION_COMPLETE
     const xpResult = await awardXP(
       clientId,
-      XP_REWARDS.SESSION_COMPLETE,
-      'session_complete',
+      xpAmount,
+      workoutType === 'SELF_LOGGED' ? 'self_logged_workout' : 'session_complete',
       sessionId,
-      'Completed training session'
+      workoutType === 'SELF_LOGGED' ? 'Self-logged workout' : 'Completed training session'
     )
 
     if (!xpResult.success) {
@@ -87,10 +90,11 @@ export async function onSessionComplete(
       }
     }
 
-    // 2. Update stats based on session type
+    // 2. Update stats based on focus type
+    const statsFocus = focusType?.toLowerCase() || 'balanced'
     const statsGained = await updateStatsForSession(
       clientId,
-      sessionType || 'balanced'
+      statsFocus
     )
 
     // 3. Update streak
@@ -99,7 +103,7 @@ export async function onSessionComplete(
     // 4. Compile result
     const result: SessionCompletionResult = {
       success: true,
-      xpAwarded: XP_REWARDS.SESSION_COMPLETE,
+      xpAwarded: xpAmount,
       statsUpdated: statsGained,
       streakUpdate: {
         currentStreak: streakResult.currentStreak,
