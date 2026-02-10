@@ -159,7 +159,7 @@ function Character3D({
   const auraIntensity = auraIntensityMap[modifiers.auraTier] || 0
   
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} position={[0, -0.5, 0]}>
       {/* Aura particles */}
       <AuraParticles intensity={auraIntensity} color={scheme.accent} />
       
@@ -303,12 +303,12 @@ export default function Avatar3D({
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
-        camera={{ position: [0, 1.5, 4], fov: 50 }}
+        camera={{ position: [0, 0.8, 4], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >
         <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 1.5, 4]} />
+          <PerspectiveCamera makeDefault position={[0, 0.8, 4]} />
           
           {/* Lighting */}
           <ambientLight intensity={0.6} />
@@ -330,7 +330,7 @@ export default function Avatar3D({
           />
           
           {/* Ground plane (for shadows) */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.75, 0]} receiveShadow>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.25, 0]} receiveShadow>
             <planeGeometry args={[10, 10]} />
             <shadowMaterial opacity={0.2} />
           </mesh>
