@@ -77,7 +77,7 @@ export default async function ShareCardDemoPage() {
   return (
     <div className="min-h-screen bg-gray-950">
       <NavBar 
-        role={session.user.role} 
+        role={session.user.role as 'client' | 'admin'} 
         backLink={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/client/dashboard'}
         backText="← Back to Dashboard"
       />
