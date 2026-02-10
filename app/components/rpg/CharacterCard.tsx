@@ -1,4 +1,4 @@
-import AvatarV2 from './AvatarV2'
+import Avatar from './Avatar'
 import { getLevelProgress } from '@/app/lib/rpg/levels'
 import { calculatePowerLevel } from '@/app/lib/rpg/stats'
 
@@ -11,6 +11,7 @@ type CharacterCardProps = {
   currentStreak: number
   longestStreak: number
   userName?: string
+  use3D?: boolean
 }
 
 export default function CharacterCard({
@@ -22,6 +23,7 @@ export default function CharacterCard({
   currentStreak,
   longestStreak,
   userName,
+  use3D = true,
 }: CharacterCardProps) {
   const progress = getLevelProgress(xp)
   const powerLevel = calculatePowerLevel(strength, endurance, discipline)
@@ -32,23 +34,14 @@ export default function CharacterCard({
         {/* Left: Avatar & Name */}
         <div className="flex flex-col items-center justify-center">
           <div className="mb-4">
-            <AvatarV2
+            <Avatar
               strength={strength}
               endurance={endurance}
               discipline={discipline}
-              config={{
-                hairStyle: 'short',
-                hairColor: '#2C1810',
-                skinTone: '#F0D0B0',
-                outfit: 'tee',
-                colorScheme: 'navy',
-                accessories: {
-                  headband: discipline >= 50,
-                  wristbands: strength >= 50,
-                  watch: discipline >= 25,
-                },
-              }}
+              colorScheme="navy"
               size="xl"
+              use3D={use3D}
+              autoRotate={true}
             />
           </div>
           {userName && (

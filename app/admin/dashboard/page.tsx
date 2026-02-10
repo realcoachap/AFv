@@ -146,6 +146,29 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
+        {/* Client Avatars Card */}
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 rounded-lg p-6 mt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-blue-900 mb-2">
+                🎨 NEW: 3D Client Avatars
+              </h3>
+              <p className="text-blue-700 mb-3">
+                View all your clients&apos; 3D RPG characters in one place. See their stats and progress!
+              </p>
+              <Link
+                href="/admin/rpg/avatars"
+                className="inline-block bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg"
+              >
+                View Client Avatars →
+              </Link>
+            </div>
+            <div className="hidden sm:block text-6xl">
+              🧑‍🎨
+            </div>
+          </div>
+        </div>
+
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
             🎉 Phase 2 Complete!
