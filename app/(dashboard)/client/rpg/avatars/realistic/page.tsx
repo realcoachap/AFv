@@ -6,8 +6,8 @@
  */
 
 import { useState } from 'react'
+import RealisticAvatarV3 from '@/app/components/rpg/RealisticAvatarV3'
 import RealisticAvatarV2 from '@/app/components/rpg/RealisticAvatarV2'
-import RealisticAvatar from '@/app/components/rpg/RealisticAvatar'
 
 const demoCharacters = [
   {
@@ -77,7 +77,7 @@ const demoCharacters = [
 ]
 
 export default function RealisticAvatarDemoPage() {
-  const [selectedView, setSelectedView] = useState<'realistic' | 'legacy'>('realistic')
+  const [selectedView, setSelectedView] = useState<'v3' | 'v2'>('v3')
   const [selectedChar, setSelectedChar] = useState(demoCharacters[0])
 
   return (
@@ -101,24 +101,24 @@ export default function RealisticAvatarDemoPage() {
           {/* View Toggle */}
           <div className="flex justify-center gap-4">
             <button
-              onClick={() => setSelectedView('realistic')}
+              onClick={() => setSelectedView('v3')}
               className={`px-6 py-3 rounded-xl font-bold transition-all ${
-                selectedView === 'realistic'
+                selectedView === 'v3'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              🎮 Enhanced v2
+              🎮 V3 POLISHED
             </button>
             <button
-              onClick={() => setSelectedView('legacy')}
+              onClick={() => setSelectedView('v2')}
               className={`px-6 py-3 rounded-xl font-bold transition-all ${
-                selectedView === 'legacy'
+                selectedView === 'v2'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              📦 v1 Original
+              📦 V2 Original
             </button>
           </div>
         </div>
@@ -144,7 +144,23 @@ export default function RealisticAvatarDemoPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Avatar */}
           <div className="bg-gray-800/30 rounded-3xl p-8 border border-gray-700 flex items-center justify-center min-h-[600px]">
-            {selectedView === 'realistic' ? (
+            {selectedView === 'v3' ? (
+              <div className="text-center">
+                <RealisticAvatarV3
+                  level={selectedChar.level}
+                  strength={selectedChar.strength}
+                  endurance={selectedChar.endurance}
+                  discipline={selectedChar.discipline}
+                  colorScheme={selectedChar.customization.colorScheme}
+                  customization={selectedChar.customization}
+                  size="xl"
+                  autoRotate={true}
+                />
+                <p className="mt-4 text-gray-400 text-sm">
+                  ✨ V3 POLISHED - Smooth & Real
+                </p>
+              </div>
+            ) : (
               <div className="text-center">
                 <RealisticAvatarV2
                   level={selectedChar.level}
@@ -157,23 +173,7 @@ export default function RealisticAvatarDemoPage() {
                   autoRotate={true}
                 />
                 <p className="mt-4 text-gray-400 text-sm">
-                  🎮 Enhanced v2 - Drag to rotate
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <RealisticAvatar
-                  level={selectedChar.level}
-                  strength={selectedChar.strength}
-                  endurance={selectedChar.endurance}
-                  discipline={selectedChar.discipline}
-                  colorScheme={selectedChar.customization.colorScheme}
-                  customization={selectedChar.customization}
-                  size="xl"
-                  autoRotate={true}
-                />
-                <p className="mt-4 text-gray-400 text-sm">
-                  📦 Original realistic style
+                  📦 V2 Original
                 </p>
               </div>
             )}
