@@ -40,10 +40,10 @@ export default function RealisticAvatarV3({
   showStats = true,
 }: RealisticAvatarV3Props) {
   const sizes = {
-    sm: { width: 240, height: 360 },
-    md: { width: 360, height: 540 },
-    lg: { width: 480, height: 720 },
-    xl: { width: 600, height: 900 },
+    sm: { width: 280, height: 400 },
+    md: { width: 360, height: 520 },
+    lg: { width: 480, height: 680 },
+    xl: { width: 560, height: 800 },
   }
   
   const { width, height } = sizes[size]
@@ -52,7 +52,7 @@ export default function RealisticAvatarV3({
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
-        camera={{ position: [0, 0.2, 5.5], fov: 32 }}
+        camera={{ position: [0, 0, 10], fov: 28 }}
         gl={{ 
           antialias: true, 
           alpha: true,
@@ -73,7 +73,7 @@ export default function RealisticAvatarV3({
         />
         
         <ContactShadows
-          position={[0, -2.8, 0]}
+          position={[0, -2.2, 0]}
           opacity={0.5}
           scale={12}
           blur={2.5}
@@ -83,11 +83,11 @@ export default function RealisticAvatarV3({
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          minPolarAngle={Math.PI / 2.3}
-          maxPolarAngle={Math.PI / 1.7}
+          minPolarAngle={Math.PI / 2.5}
+          maxPolarAngle={Math.PI / 1.8}
           autoRotate={autoRotate}
-          autoRotateSpeed={0.6}
-          target={[0, 0.2, 0]}
+          autoRotateSpeed={0.5}
+          target={[0, 0, 0]}
         />
       </Canvas>
       
@@ -130,7 +130,7 @@ function Character({
   useFrame((state) => {
     if (groupRef.current) {
       const breathe = Math.sin(state.clock.elapsedTime * 0.8) * 0.006
-      groupRef.current.position.y = -2.5 + breathe
+      groupRef.current.position.y = -1.2 + breathe
       groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.2) * 0.03
     }
   })
@@ -180,7 +180,7 @@ function Character({
         <Leg side="right" strength={strength} shortsColor={scheme.shorts} skinColor={skinColor} />
       </group>
       
-      <LevelBadge level={level} position={[1.2, 0.5, 0]} />
+      <LevelBadge level={level} position={[1.3, 1.2, 0]} />
     </group>
   )
 }
