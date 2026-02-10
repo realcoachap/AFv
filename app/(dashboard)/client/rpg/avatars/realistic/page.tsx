@@ -6,8 +6,8 @@
  */
 
 import { useState } from 'react'
+import RealisticAvatarV2 from '@/app/components/rpg/RealisticAvatarV2'
 import RealisticAvatar from '@/app/components/rpg/RealisticAvatar'
-import Avatar3D from '@/app/components/rpg/Avatar3D'
 
 const demoCharacters = [
   {
@@ -104,7 +104,7 @@ export default function RealisticAvatarDemoPage() {
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              🎮 Realistic (NEW)
+              🎮 Enhanced v2
             </button>
             <button
               onClick={() => setSelectedView('legacy')}
@@ -114,7 +114,7 @@ export default function RealisticAvatarDemoPage() {
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              📦 Legacy (Old)
+              📦 v1 Original
             </button>
           </div>
         </div>
@@ -142,6 +142,22 @@ export default function RealisticAvatarDemoPage() {
           <div className="bg-gray-800/30 rounded-3xl p-8 border border-gray-700 flex items-center justify-center min-h-[600px]">
             {selectedView === 'realistic' ? (
               <div className="text-center">
+                <RealisticAvatarV2
+                  level={selectedChar.level}
+                  strength={selectedChar.strength}
+                  endurance={selectedChar.endurance}
+                  discipline={selectedChar.discipline}
+                  colorScheme={selectedChar.customization.colorScheme}
+                  customization={selectedChar.customization}
+                  size="xl"
+                  autoRotate={true}
+                />
+                <p className="mt-4 text-gray-400 text-sm">
+                  🎮 Enhanced v2 - Drag to rotate
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
                 <RealisticAvatar
                   level={selectedChar.level}
                   strength={selectedChar.strength}
@@ -153,22 +169,7 @@ export default function RealisticAvatarDemoPage() {
                   autoRotate={true}
                 />
                 <p className="mt-4 text-gray-400 text-sm">
-                  🎮 Drag to rotate • Scroll to zoom
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <Avatar3D
-                  strength={selectedChar.strength}
-                  endurance={selectedChar.endurance}
-                  discipline={selectedChar.discipline}
-                  colorScheme={selectedChar.customization.colorScheme}
-                  customization={selectedChar.customization}
-                  size="xl"
-                  autoRotate={true}
-                />
-                <p className="mt-4 text-gray-400 text-sm">
-                  📦 Legacy blocky style
+                  📦 Original realistic style
                 </p>
               </div>
             )}
