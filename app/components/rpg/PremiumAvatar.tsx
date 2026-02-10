@@ -5,7 +5,7 @@
  * Stylistic character portraits that evolve with stats
  */
 
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 
 type AvatarProps = {
@@ -455,7 +455,7 @@ export default function PremiumAvatar({
 
 // Helper: Render different hair styles
 function renderHair(style: string, color: string) {
-  const styles: Record<string, JSX.Element> = {
+  const styles: Record<string, React.JSX.Element> = {
     short: (
       <path
         d="M 75 45 Q 100 20 125 45 Q 125 55 120 50 Q 100 35 80 50 Q 75 55 75 45"
