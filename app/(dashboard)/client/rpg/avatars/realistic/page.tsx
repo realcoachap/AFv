@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import RealisticAvatarV3 from '@/app/components/rpg/RealisticAvatarV3'
 import RealisticAvatarV2 from '@/app/components/rpg/RealisticAvatarV2'
+import NavBar from '@/app/components/NavBar'
 
 const demoCharacters = [
   {
@@ -81,8 +82,11 @@ export default function RealisticAvatarDemoPage() {
   const [selectedChar, setSelectedChar] = useState(demoCharacters[0])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <NavBar role="client" />
+      
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm">
@@ -247,6 +251,7 @@ export default function RealisticAvatarDemoPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

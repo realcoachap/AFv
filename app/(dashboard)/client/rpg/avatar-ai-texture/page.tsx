@@ -9,6 +9,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarWithAITextures from '../../../../components/rpg/AvatarWithAITextures'
+import NavBar from '../../../../components/NavBar'
 
 interface GeneratedTexture {
   id: string
@@ -104,6 +105,8 @@ export default function AITexturePipelinePage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <NavBar role="client" />
+      
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

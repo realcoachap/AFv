@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import VRoidCharacter, { VRoidPresets } from '../../../../components/rpg/VRoidCharacter'
+import NavBar from '../../../../components/NavBar'
 
 // Placeholder model URL - replace with actual VRoid .glb file
 const DEMO_MODEL_URL = '/models/vroid-sample.glb'
@@ -38,6 +39,8 @@ export default function VRoidDemoPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <NavBar role="client" />
+      
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import NavBar from '@/app/components/NavBar'
 
 // RPM subdomain - you'd create this at readyplayer.me
 const RPM_SUBDOMAIN = 'ascending-fitness' // Replace with your actual subdomain
@@ -72,6 +73,8 @@ export default function AvatarCreatorPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <NavBar role="client" />
+      
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

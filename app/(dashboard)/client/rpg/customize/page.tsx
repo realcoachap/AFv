@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Avatar from '@/app/components/rpg/Avatar'
+import NavBar from '@/app/components/NavBar'
 import {
   SKIN_TONES,
   HAIR_STYLES,
@@ -107,8 +108,11 @@ export default function CustomizeAvatarPage() {
   const availableColorSchemes = getAvailableOptions(COLOR_SCHEMES, level)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <NavBar role="client" />
+      
+      <div className="p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
@@ -382,6 +386,7 @@ export default function CustomizeAvatarPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

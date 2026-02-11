@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
 
 interface NavBarProps {
   role: 'admin' | 'client'
@@ -8,6 +11,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({ role, backLink, backText }: NavBarProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const dashboardLink = role === 'admin' ? '/admin/dashboard' : '/client/dashboard'
   const defaultBackText = backLink ? '← Back' : ''
 
@@ -39,12 +43,16 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
 
         <div className="flex items-center gap-4">
           {/* TEMPORARY: Dev Links Dropdown */}
-          <div className="relative group">
-            <button className="text-[#E8DCC4] hover:text-white text-sm sm:text-base flex items-center gap-1">
-              🎮 RPG Features ▼
+          <div className="relative">
+            <button 
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-[#E8DCC4] hover:text-white text-sm sm:text-base flex items-center gap-1"
+            >
+              🎮 RPG Features {isOpen ? '▲' : '▼'}
             </button>
             
-            <div className="absolute right-0 mt-2 w-56 bg-[#1A2332] border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            {/* Desktop: hover dropdown */}
+            <div className="hidden sm:block absolute right-0 mt-2 w-56 bg-[#1A2332] border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
               <div className="p-2">
                 <p className="text-xs text-gray-500 px-3 py-1 border-b border-gray-700 mb-1">Temporary Dev Links</p>
                 {devLinks.map((link) => (
@@ -58,6 +66,25 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
                 ))}
               </div>
             </div>
+
+            {/* Mobile: click dropdown */}
+            {isOpen && (
+              <div className="sm:hidden absolute right-0 mt-2 w-56 bg-[#1A2332] border border-gray-700 rounded-lg shadow-xl z-50">
+                <div className="p-2">
+                  <p className="text-xs text-gray-500 px-3 py-1 border-b border-gray-700 mb-1">Temporary Dev Links</p>
+                  {devLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-2 text-sm text-[#E8DCC4] hover:bg-gray-800 hover:text-white rounded transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Back Link - Compact on mobile */}

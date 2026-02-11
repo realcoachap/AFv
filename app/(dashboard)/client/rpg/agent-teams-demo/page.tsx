@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AGENT_DEFINITIONS, DEFAULT_AGENT_TEAMS } from '../../../../lib/agents'
+import NavBar from '../../../../components/NavBar'
 
 export default function AgentTeamsDemoPage() {
   const router = useRouter()
@@ -69,6 +70,8 @@ export default function AgentTeamsDemoPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <NavBar role="client" />
+      
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
