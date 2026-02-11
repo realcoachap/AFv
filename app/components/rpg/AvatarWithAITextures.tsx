@@ -5,71 +5,69 @@
  * Applies AI-generated face textures to the procedural mesh
  */
 
-import { useRef, useMemo, useEffect } from 'react'
+import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, Environment, ContactShadows, Center } from '@react-three/drei'
 import * as THREE from 'three'
 
 interface AvatarWithAITexturesProps {
-  // AI Generated textures
   diffuseTextureUrl: string
   normalTextureUrl?: string
   roughnessTextureUrl?: string
-  
-  // Stats for body shape
   strength: number
   endurance: number
   level: number
-  
-  // Display options
   size?: 'sm' | 'md' | 'lg' | 'xl'
   autoRotate?: boolean
 }
 
-// The actual 3D avatar component
+// Error boundary for Three.js
+function ErrorFallback() {
+  return (
+    <div className="flex items-center justify-center h-full bg-gray-900">
+      <div className="text-center text-gray-500">
+        <p>3D Avatar failed to load</p>
+      </div>
+    </div>
+  )
+}
+
 function AvatarMesh({ 
   diffuseTextureUrl,
-  normalTextureUrl,
-  roughnessTextureUrl,
   strength,
   endurance
 }: {
   diffuseTextureUrl: string
-  normalTextureUrl?: string
-  roughnessTextureUrl?: string
   strength: number
   endurance: number
 }) {
   const groupRef = useRef<THREE.Group>(null)
-  const { scene } = useThree()
+  const [textureLoaded, setTextureLoaded] = useState(false)
   
-  // Load textures
-  const textures = useMemo(() => {
+  // Load texture
+  const diffuseTexture = useMemo(() => {
     const loader = new THREE.TextureLoader()
-    
-    return {
-      diffuse: loader.load(diffuseTextureUrl),
-      normal: normalTextureUrl ? loader.load(normalTextureUrl) : null,
-      roughness: roughnessTextureUrl ? loader.load(roughnessTextureUrl) : null,
-    }
-  }, [diffuseTextureUrl, normalTextureUrl, roughnessTextureUrl])
+    const texture = loader.load(
+      diffuseTextureUrl,
+      () => setTextureLoaded(true),
+      undefined,
+      () => console.error('Failed to load texture')
+    )
+    return texture
+  }, [diffuseTextureUrl])
   
-  // Configure textures
+  // Configure texture
   useEffect(() => {
-    Object.values(textures).forEach(tex => {
-      if (tex) {
-        tex.wrapS = THREE.RepeatWrapping
-        tex.wrapT = THREE.RepeatWrapping
-        tex.repeat.set(1, 1)
-      }
-    })
-  }, [textures])
+    if (diffuseTexture) {
+      diffuseTexture.wrapS = THREE.RepeatWrapping
+      diffuseTexture.wrapT = THREE.RepeatWrapping
+      diffuseTexture.repeat.set(1, 1)
+    }
+  }, [diffuseTexture])
   
-  // Body metrics based on stats
+  // Body metrics
   const metrics = useMemo(() => {
     const muscle = strength / 100
-    const lean = endurance / 100
-    
     return {
       scale: 0.9 + muscle * 0.25,
       width: 0.85 + muscle * 0.2,
@@ -85,43 +83,35 @@ function AvatarMesh({
     }
   })
   
-  // AI-enhanced skin material
+  // Skin material with user's photo
   const skinMaterial = useMemo(() => {
-    const mat = new THREE.MeshPhysicalMaterial({
-      map: textures.diffuse,
-      normalMap: textures.normal || undefined,
-      roughnessMap: textures.roughness || undefined,
-      
-      // Enhanced properties for realistic skin
-      roughness: 0.4,
+    return new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      roughness: 0.5,
       metalness: 0,
-      clearcoat: 0.3,
-      clearcoatRoughness: 0.2,
-      
-      // Subsurface scattering for skin translucency
-      transmission: 0.1,
-      thickness: 0.5,
-      
-      // Sheen for soft skin reflection
-      sheen: 0.3,
-      sheenColor: new THREE.Color(0xffdbac),
-      sheenRoughness: 0.5,
     })
-    
-    return mat
-  }, [textures])
+  }, [diffuseTexture])
+  
+  if (!textureLoaded) {
+    return (
+      <group>
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshBasicMaterial color="#333" />
+        </mesh>
+      </group>
+    )
+  }
   
   return (
     <group ref={groupRef} scale={[metrics.width, metrics.scale, metrics.width]}>
       {/* HEAD with AI texture */}
       <group position={[0, 2.1, 0]}>
-        {/* Main head geometry */}
         <mesh castShadow>
           <capsuleGeometry args={[0.26, 0.35, 8, 16]} />
           <primitive object={skinMaterial} attach="material" />
         </mesh>
         
-        {/* Jaw */}
         <mesh position={[0, -0.22, 0.08]} castShadow>
           <sphereGeometry args={[0.2, 16, 16]} />
           <primitive object={skinMaterial} attach="material" />
@@ -131,13 +121,11 @@ function AvatarMesh({
         <Eye position={[-0.09, 0.02, 0.22]} />
         <Eye position={[0.09, 0.02, 0.22]} />
         
-        {/* Nose */}
         <mesh position={[0, -0.05, 0.28]} castShadow>
           <sphereGeometry args={[0.055, 12, 12]} />
           <primitive object={skinMaterial} attach="material" />
         </mesh>
         
-        {/* Mouth */}
         <mesh position={[0, -0.18, 0.22]}>
           <boxGeometry args={[0.12, 0.025, 0.02]} />
           <meshStandardMaterial color="#c97e7e" />
@@ -146,31 +134,26 @@ function AvatarMesh({
       
       {/* BODY */}
       <group position={[0, 1.15, 0]}>
-        {/* Torso */}
         <mesh castShadow>
           <capsuleGeometry args={[0.28, 0.45, 8, 16]} />
           <meshStandardMaterial color="#1e3a5f" roughness={0.7} />
         </mesh>
         
-        {/* Abs area - uses skin material */}
         <mesh position={[0, -0.35, 0]} castShadow>
           <capsuleGeometry args={[0.22, 0.35, 8, 16]} />
           <primitive object={skinMaterial} attach="material" />
         </mesh>
       </group>
       
-      {/* ARMS */}
       <Arm side="left" strength={strength} skinMaterial={skinMaterial} />
       <Arm side="right" strength={strength} skinMaterial={skinMaterial} />
       
-      {/* LEGS */}
       <Leg side="left" strength={strength} />
       <Leg side="right" strength={strength} />
     </group>
   )
 }
 
-// Eye component
 function Eye({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
@@ -190,7 +173,6 @@ function Eye({ position }: { position: [number, number, number] }) {
   )
 }
 
-// Arm component
 function Arm({ side, strength, skinMaterial }: { side: 'left' | 'right'; strength: number; skinMaterial: THREE.Material }) {
   const xOffset = side === 'left' ? -0.38 : 0.38
   const muscleScale = 0.8 + (strength / 100) * 0.3
@@ -215,7 +197,6 @@ function Arm({ side, strength, skinMaterial }: { side: 'left' | 'right'; strengt
   )
 }
 
-// Leg component
 function Leg({ side, strength }: { side: 'left' | 'right'; strength: number }) {
   const xOffset = side === 'left' ? -0.16 : 0.16
   const muscleScale = 0.85 + (strength / 100) * 0.25
@@ -235,11 +216,8 @@ function Leg({ side, strength }: { side: 'left' | 'right'; strength: number }) {
   )
 }
 
-// Main export component
 export default function AvatarWithAITextures({
   diffuseTextureUrl,
-  normalTextureUrl,
-  roughnessTextureUrl,
   strength,
   endurance,
   level,
@@ -263,27 +241,15 @@ export default function AvatarWithAITextures({
         gl={{ 
           antialias: true, 
           alpha: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.0
         }}
       >
         <Environment preset="studio" />
         
-        <ambientLight intensity={0.4} />
-        <directionalLight 
-          position={[5, 5, 5]} 
-          intensity={1} 
-          castShadow 
-          shadow-mapSize={[1024, 1024]}
-        />
-        <directionalLight position={[-5, 2, 5]} intensity={0.5} />
-        <directionalLight position={[0, 5, -5]} intensity={0.3} />
-        
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
         <Center>
           <AvatarMesh 
             diffuseTextureUrl={diffuseTextureUrl}
-            normalTextureUrl={normalTextureUrl}
-            roughnessTextureUrl={roughnessTextureUrl}
             strength={strength}
             endurance={endurance}
           />
@@ -300,21 +266,18 @@ export default function AvatarWithAITextures({
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          minPolarAngle={Math.PI / 2.5}
-          maxPolarAngle={Math.PI / 1.8}
           autoRotate={autoRotate}
           autoRotateSpeed={0.5}
         />
       </Canvas>
       
-      {/* Stats overlay */}
       <div className="absolute bottom-3 left-3 right-3 z-10">
         <div className="bg-black/70 backdrop-blur-md rounded-lg p-3 border border-purple-500/50">
           <div className="flex items-center justify-between">
             <span className="text-white font-bold">Lvl {level}</span>
             <span className="text-purple-400 text-sm">🧠 AI Enhanced</span>
           </div>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-1">
             <span className="text-xs text-green-400">✓ Your face texture applied</span>
           </div>
         </div>

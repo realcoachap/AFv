@@ -1,30 +1,14 @@
 'use client'
 
 /**
- * AI Texture Pipeline - Proof of Concept
- * Upload photo → AI generates textures → Apply to 3D avatar
- * This is the cutting-edge feature!
+ * AI Texture Pipeline - Proof of Concept (SIMPLIFIED)
+ * Upload photo → Show texture applied to 3D avatar
+ * Using a simpler approach for POC
  */
 
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
-
-// Dynamic import for 3D component (avoids SSR issues)
-const AvatarWithAITextures = dynamic(
-  () => import('../../../../components/rpg/AvatarWithAITextures'),
-  { ssr: false, loading: () => (
-    <div className="h-[400px] flex items-center justify-center bg-gray-900 rounded-xl">
-      <div className="text-center text-gray-500">
-        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-        <p>Loading 3D avatar...</p>
-      </div>
-    </div>
-  )}
-)
-
-// Demo avatar URLs for texture generation
-const DEMO_AVATAR_URL = 'https://models.readyplayer.me/64a9c3c7c8b5a72d5a1b2c3d.glb'
+import AvatarWithAITextures from '../../../../components/rpg/AvatarWithAITextures'
 
 interface GeneratedTexture {
   id: string
@@ -42,13 +26,13 @@ export default function AITexturePipelinePage() {
   const [generatedTextures, setGeneratedTextures] = useState<GeneratedTexture[]>([])
   const [processingStep, setProcessingStep] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [showAvatar, setShowAvatar] = useState(false)
 
   // Handle photo upload
   const handlePhotoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    // Validate file
     if (!file.type.startsWith('image/')) {
       setError('Please upload an image file (JPG, PNG)')
       return
@@ -59,15 +43,14 @@ export default function AITexturePipelinePage() {
       return
     }
 
-    // Create preview URL
     const url = URL.createObjectURL(file)
     setUploadedPhoto(url)
     setError(null)
     setGeneratedTextures([])
+    setShowAvatar(false)
   }, [])
 
   // Simulate AI texture generation
-  // In production, this would call Replicate/Stability AI API
   const generateTextures = async () => {
     if (!uploadedPhoto) return
     
@@ -75,29 +58,23 @@ export default function AITexturePipelinePage() {
     setError(null)
     
     try {
-      // Step 1: Analyze photo
       setProcessingStep('🔍 Analyzing facial features...')
       await new Promise(r => setTimeout(r, 1500))
       
-      // Step 2: Generate diffuse map (base color)
       setProcessingStep('🎨 Generating skin texture...')
       await new Promise(r => setTimeout(r, 2000))
       
-      // Step 3: Generate normal map (depth/pores)
       setProcessingStep('🔬 Creating pore details...')
       await new Promise(r => setTimeout(r, 1800))
       
-      // Step 4: Generate roughness map
       setProcessingStep('✨ Calculating skin shine...')
       await new Promise(r => setTimeout(r, 1200))
       
-      // Mock generated textures
-      // In production, these would be actual URLs from AI API
       const textures: GeneratedTexture[] = [
         {
           id: '1',
           type: 'diffuse',
-          url: uploadedPhoto, // Would be AI-generated texture
+          url: uploadedPhoto,
           prompt: 'photorealistic skin texture, seamless, 4k, detailed pores'
         },
         {
@@ -116,6 +93,7 @@ export default function AITexturePipelinePage() {
       
       setGeneratedTextures(textures)
       setProcessingStep('✅ Textures generated!')
+      setShowAvatar(true)
       
     } catch (err) {
       setError('Texture generation failed. Please try again.')
@@ -182,6 +160,7 @@ export default function AITexturePipelinePage() {
                     onClick={() => {
                       setUploadedPhoto(null)
                       setGeneratedTextures([])
+                      setShowAvatar(false)
                     }}
                     className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                   >
@@ -196,7 +175,7 @@ export default function AITexturePipelinePage() {
             </div>
 
             {/* Generate Button */}
-            {uploadedPhoto && generatedTextures.length === 0 && (
+            {uploadedPhoto && !showAvatar && (
               <button
                 onClick={generateTextures}
                 disabled={isProcessing}
@@ -210,7 +189,7 @@ export default function AITexturePipelinePage() {
             {isProcessing && (
               <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                   <p className="text-white">{processingStep}</p>
                 </div>
                 
@@ -242,29 +221,6 @@ export default function AITexturePipelinePage() {
                 </div>
               </div>
             )}
-
-            {/* How It Works */}
-            <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-              <h2 className="text-xl font-bold text-white mb-4">🧬 How It Works</h2>
-              
-              <div className="space-y-4">
-                {[
-                  { icon: '📸', title: 'Photo Analysis', desc: 'AI extracts skin tone, texture, features' },
-                  { icon: '🎨', title: 'Diffuse Map', desc: 'Base color texture from your skin' },
-                  { icon: '🔬', title: 'Normal Map', desc: 'Pore depth and surface details' },
-                  { icon: '✨', title: 'Roughness Map', desc: 'Shininess variation across face' },
-                  { icon: '🧍', title: 'Avatar Application', desc: 'Textures applied to 3D mesh' },
-                ].map((step, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <span className="text-2xl">{step.icon}</span>
-                    <div>
-                      <p className="text-white font-medium">{step.title}</p>
-                      <p className="text-gray-400 text-sm">{step.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Right: Live Preview */}
@@ -293,8 +249,8 @@ export default function AITexturePipelinePage() {
                   
                   <div>
                     <p className="text-gray-400 text-sm mb-2">AI Enhanced Avatar</p>
-                    <div className="aspect-square bg-gray-900 rounded-xl overflow-hidden">
-                      {generatedTextures.length > 0 ? (
+                    {showAvatar ? (
+                      <div className="aspect-square bg-gray-900 rounded-xl overflow-hidden">
                         <AvatarWithAITextures
                           diffuseTextureUrl={uploadedPhoto}
                           strength={75}
@@ -303,21 +259,21 @@ export default function AITexturePipelinePage() {
                           size="lg"
                           autoRotate={true}
                         />
-                      ) : (
-                        <div className="h-full flex items-center justify-center text-gray-500">
-                          <div className="text-center">
-                            <div className="text-4xl mb-2">⏳</div>
-                            <p>Waiting for generation...</p>
-                          </div>
+                      </div>
+                    ) : (
+                      <div className="aspect-square bg-gray-900 rounded-xl flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <div className="text-4xl mb-2">⏳</div>
+                          <p>Click Generate to see avatar</p>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Texture Status */}
                 {generatedTextures.length > 0 && (
-                  <div className="mt-4 flex gap-2 justify-center">
+                  <div className="flex gap-2 justify-center flex-wrap">
                     <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Diffuse map applied</span>
                     <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Normal map applied</span>
                     <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Roughness map applied</span>
