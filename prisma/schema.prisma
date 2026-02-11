@@ -27,6 +27,7 @@ model User {
   rpgUserQuests        RPGUserQuest[]
   rpgUserAchievements  RPGUserAchievement[]
   rpgXPLogs            RPGXPLog[]
+  workouts             Workout[]
 
   @@index([email])
   @@index([role])
@@ -377,4 +378,120 @@ model RPGXPLog {
   @@index([userId])
   @@index([source])
   @@index([createdAt])
+}
+
+// ========================================
+// WORKOUT TRACKING SYSTEM
+// ========================================
+
+// Workout sessions logged by clients
+model Workout {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Workout details
+  name      String   // e.g., "Upper Body Day", "Morning Run"
+  notes     String?  // Optional workout notes
+  
+  // Timing
+  date      DateTime // When the workout was performed
+  duration  Int?     // Duration in minutes
+  
+  // Workout metadata
+  type      WorkoutType @default(SELF_LOGGED)
+  status    WorkoutStatus @default(COMPLETED)
+  
+  // RPG Integration
+  focusType FocusType?  // STRENGTH, CARDIO, or BALANCED
+  xpAwarded Int         @default(0)
+  
+  // Relations
+  exercises Exercise[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
+  @@index([status])
+  @@index([focusType])
+}
+
+enum WorkoutStatus {
+  PLANNED     // Scheduled for future
+  IN_PROGRESS // Currently doing the workout
+  COMPLETED   // Finished
+  CANCELLED   // Didn't complete
+}
+
+// Individual exercises within a workout
+model Exercise {
+  id        String   @id @default(cuid())
+  
+  workoutId String
+  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  
+  // Exercise details
+  name      String   // e.g., "Bench Press", "Squat", "Running"
+  category  ExerciseCategory
+  
+  // Sets/reps/weight tracking
+  sets      Set[]
+  
+  // For cardio exercises
+  duration  Int?     // Duration in minutes (for cardio)
+  distance  Float?   // Distance in km or miles
+  distanceUnit String? // "km", "miles", "meters"
+  
+  // Notes for this exercise
+  notes     String?
+  
+  order     Int      @default(0) // Display order within workout
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workoutId])
+  @@index([category])
+  @@index([name])
+}
+
+enum ExerciseCategory {
+  STRENGTH    // Weight training, resistance
+  CARDIO      // Running, cycling, swimming
+  FLEXIBILITY // Stretching, yoga
+  BALANCE     // Balance exercises
+  SPORT       // Sport-specific
+  OTHER
+}
+
+// Individual sets for strength exercises
+model Set {
+  id        String   @id @default(cuid())
+  
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  
+  setNumber Int      // Which set number (1, 2, 3, etc.)
+  reps      Int?     // Number of reps performed
+  weight    Float?   // Weight used
+  weightUnit String  @default("lbs") // "lbs", "kg", "bodyweight"
+  duration  Int?     // Time-based (e.g., planks) in seconds
+  distance  Float?   // For exercises like rowing
+  
+  // Completion status
+  completed Boolean  @default(true)
+  
+  // RPE (Rate of Perceived Exertion) - scale of 1-10
+  rpe       Int?
+  
+  notes     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([exerciseId])
+  @@index([setNumber])
 }
