@@ -1,8 +1,8 @@
 'use client'
 
 /**
- * Realistic Avatar 3D v3.1 - Mobile Optimized
- * Centered character, smaller frame, full body visible
+ * Realistic Avatar 3D v3.2 - Post-Processing Enhanced
+ * Bloom, ambient occlusion, better lighting for premium look
  */
 
 import { useRef, useMemo } from 'react'
@@ -12,6 +12,12 @@ import {
   Environment, 
   ContactShadows,
 } from '@react-three/drei'
+import { 
+  EffectComposer, 
+  Bloom, 
+  SSAO,
+  BrightnessContrast
+} from '@react-three/postprocessing'
 import * as THREE from 'three'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 
@@ -78,6 +84,23 @@ export default function RealisticAvatarV3({
           blur={2.5}
           far={4}
         />
+        
+        {/* Post-Processing Effects */}
+        <EffectComposer>
+          <Bloom 
+            intensity={0.4}
+            luminanceThreshold={0.6}
+            luminanceSmoothing={0.3}
+            height={300}
+          />
+          <SSAO 
+            samples={16}
+            radius={0.5}
+            intensity={20}
+            luminanceInfluence={0.5}
+          />
+          <BrightnessContrast brightness={0.05} contrast={0.1} />
+        </EffectComposer>
         
         <OrbitControls
           enableZoom={false}
