@@ -6,6 +6,7 @@ import Link from 'next/link'
 import VersionFooter from '@/app/components/VersionFooter'
 import ConditionalField from '@/app/components/profile/ConditionalField'
 import { validateProfile } from '@/app/lib/validations/profile'
+import NavBar from '@/app/components/NavBar'
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -158,17 +159,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">🏋️ Ascending Fitness</h1>
-          <Link
-            href="/client/profile"
-            className="text-[#E8DCC4] hover:underline"
-          >
-            ← Back to Profile
-          </Link>
-        </div>
-      </nav>
+      <NavBar role="client" backLink="/client/profile" backText="← Back to Profile" />
 
       <main className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Logo from '@/app/components/Logo'
+import NavBar from '@/app/components/NavBar'
 
 export default async function ClientProfilePage() {
   const session = await auth()
@@ -55,34 +56,7 @@ export default async function ClientProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-[#1A2332] text-white p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/client/dashboard">
-            <Logo size="md" />
-          </Link>
-          <div className="flex gap-4 items-center">
-            <Link
-              href="/client/dashboard"
-              className="hover:text-[#E8DCC4] transition-colors"
-            >
-              Dashboard
-            </Link>
-            <form
-              action={async () => {
-                'use server'
-                await signOut()
-              }}
-            >
-              <button
-                type="submit"
-                className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
-              >
-                Logout
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
+      <NavBar role="client" />
 
       <main className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
