@@ -8,6 +8,20 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+
+// Dynamic import for 3D component (avoids SSR issues)
+const AvatarWithAITextures = dynamic(
+  () => import('../../../../components/rpg/AvatarWithAITextures'),
+  { ssr: false, loading: () => (
+    <div className="h-[400px] flex items-center justify-center bg-gray-900 rounded-xl">
+      <div className="text-center text-gray-500">
+        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+        <p>Loading 3D avatar...</p>
+      </div>
+    </div>
+  )}
+)
 
 // Demo avatar URLs for texture generation
 const DEMO_AVATAR_URL = 'https://models.readyplayer.me/64a9c3c7c8b5a72d5a1b2c3d.glb'
@@ -279,39 +293,34 @@ export default function AITexturePipelinePage() {
                   
                   <div>
                     <p className="text-gray-400 text-sm mb-2">AI Enhanced Avatar</p>
-                    <div className="aspect-square bg-gray-900 rounded-xl flex items-center justify-center">
+                    <div className="aspect-square bg-gray-900 rounded-xl overflow-hidden">
                       {generatedTextures.length > 0 ? (
-                        <div className="text-center">
-                          <div className="text-6xl mb-2">🧍</div>
-                          <p className="text-green-400">✓ Textures Applied!</p>
-                          <p className="text-gray-400 text-sm">Your face texture is now on the 3D model</p>
-                        </div>
+                        <AvatarWithAITextures
+                          diffuseTextureUrl={uploadedPhoto}
+                          strength={75}
+                          endurance={60}
+                          level={12}
+                          size="lg"
+                          autoRotate={true}
+                        />
                       ) : (
-                        <div className="text-center text-gray-500">
-                          <div className="text-4xl mb-2">⏳</div>
-                          <p>Waiting for generation...</p>
+                        <div className="h-full flex items-center justify-center text-gray-500">
+                          <div className="text-center">
+                            <div className="text-4xl mb-2">⏳</div>
+                            <p>Waiting for generation...</p>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* 3D Viewer Placeholder */}
+                {/* Texture Status */}
                 {generatedTextures.length > 0 && (
-                  <div className="mt-4">
-                    <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-xl p-4 border border-purple-700/50">
-                      <h3 className="text-white font-bold mb-2">🎮 Next Steps</h3>
-                      <p className="text-gray-300 text-sm mb-4">
-                        In production, this would show your actual 3D avatar with the AI textures applied.
-                        The avatar would rotate and show your face on the 3D mesh.
-                      </p>
-                      
-                      <div className="flex gap-2">
-                        <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Diffuse map applied</span>
-                        <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Normal map applied</span>
-                        <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Roughness map applied</span>
-                      </div>
-                    </div>
+                  <div className="mt-4 flex gap-2 justify-center">
+                    <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Diffuse map applied</span>
+                    <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Normal map applied</span>
+                    <span className="px-3 py-1 bg-green-600/30 text-green-400 rounded-full text-sm">✓ Roughness map applied</span>
                   </div>
                 )}
               </div>
