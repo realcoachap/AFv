@@ -7,7 +7,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AGENT_DEFINITIONS, DEFAULT_AGENT_TEAMS } from '@/lib/agents'
+import { AGENT_DEFINITIONS, DEFAULT_AGENT_TEAMS } from '../../../../lib/agents'
 
 export default function AgentTeamsDemoPage() {
   const router = useRouter()
