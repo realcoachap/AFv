@@ -14,8 +14,7 @@ export type {
 
 export { 
   AGENT_DEFINITIONS, 
-  DEFAULT_AGENT_TEAMS,
-  memory 
+  DEFAULT_AGENT_TEAMS
 } from './definitions'
 export type { 
   AgentType, 
