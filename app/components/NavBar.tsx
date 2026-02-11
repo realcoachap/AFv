@@ -16,6 +16,7 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
     { label: '🎮 Avatars V3', href: '/client/rpg/avatars/realistic' },
     { label: '🧠 AI Texture', href: '/client/rpg/avatar-ai-texture' },
     { label: '🎭 VRoid Demo', href: '/client/rpg/vroid-demo' },
+    { label: '⚔️ Agent Teams', href: '/client/rpg/agent-teams-demo' },
     { label: '🎯 Quests', href: '/client/rpg/quests' },
     { label: '📸 Share Cards', href: '/client/rpg/share-cards' },
     { label: '🔄 RPM Creator', href: '/client/rpg/avatar-creator-rpm' },
