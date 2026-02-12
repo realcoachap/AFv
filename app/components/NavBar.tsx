@@ -22,14 +22,31 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
         </Link>
 
         {/* Nav Links */}
-        <div className="flex items-center gap-4">
-          <Link href="/client/resources" className="text-gray-300 hover:text-white">Resources</Link>
-          
-          {backLink && (
-            <Link href={backLink} className="text-gray-300 hover:text-white">{backText || '← Back'}</Link>
+        <div className="flex items-center gap-4 text-sm sm:text-base">
+          {role === 'client' && (
+            <>
+              <Link href="/client/resources" className="text-[#E8DCC4] hover:text-white font-medium">
+                📚 Resources
+              </Link>
+              <Link href="/client/profile" className="text-gray-300 hover:text-white">
+                Profile
+              </Link>
+              <Link href="/client/schedule" className="text-gray-300 hover:text-white">
+                Schedule
+              </Link>
+              <Link href="/client/rpg" className="text-gray-300 hover:text-white">
+                🎮 RPG
+              </Link>
+            </>
           )}
           
-          <span className="text-xs text-gray-500">v{APP_VERSION}</span>
+          {backLink && (
+            <Link href={backLink} className="text-gray-300 hover:text-white">
+              {backText || '← Back'}
+            </Link>
+          )}
+          
+          <span className="text-xs text-gray-500 hidden sm:inline">v{APP_VERSION}</span>
         </div>
       </div>
     </nav>

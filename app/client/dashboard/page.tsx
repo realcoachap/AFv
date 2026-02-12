@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Image from 'next/image'
 import VersionFooter from '@/app/components/VersionFooter'
+import NavBar from '@/app/components/NavBar'
 
 export default async function ClientDashboard() {
   const session = await auth()
@@ -29,59 +30,7 @@ export default async function ClientDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <VersionFooter />
-      <nav className="bg-[#1A2332] text-white p-3 sm:p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/client/dashboard" className="flex items-center hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo.jpg" 
-              alt="Ascending Fitness" 
-              width={56} 
-              height={56} 
-              className="object-contain w-14 h-14 sm:w-16 sm:h-16" 
-              priority
-            />
-          </Link>
-          <div className="flex gap-3 sm:gap-4 items-center text-sm sm:text-base">
-            <Link
-              href="/client/profile"
-              className="hover:text-[#E8DCC4] transition-colors"
-            >
-              Profile
-            </Link>
-            <Link
-              href="/client/schedule"
-              className="hover:text-[#E8DCC4] transition-colors"
-            >
-              Schedule
-            </Link>
-            <Link
-              href="/client/rpg"
-              className="hover:text-[#E8DCC4] transition-colors font-bold"
-            >
-              🎮 RPG
-            </Link>
-            <Link
-              href="/client/calculator"
-              className="hover:text-[#E8DCC4] transition-colors"
-            >
-              Calculator
-            </Link>
-            <form
-              action={async () => {
-                'use server'
-                await signOut()
-              }}
-            >
-              <button
-                type="submit"
-                className="bg-[#E8DCC4] text-[#1A2332] px-4 py-2 rounded hover:bg-[#D8CCA4] transition-colors"
-              >
-                Logout
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
+      <NavBar role="client" />
 
       <main className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
