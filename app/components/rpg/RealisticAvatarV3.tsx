@@ -511,7 +511,6 @@ function Body({
     </group>
   )
 }
-}
 
 // ============================================
 // SMOOTH ARM - UPGRADED MATERIALS
