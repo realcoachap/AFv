@@ -31,11 +31,13 @@ type RealisticAvatarV4Props = {
 function createSkinMaterial(color: string) {
   return new THREE.MeshPhysicalMaterial({
     color: color,
-    roughness: 0.5,
+    roughness: 0.45,
     metalness: 0.0,
-    clearcoat: 0.05,       // Minimal
+    clearcoat: 0.08,
     clearcoatRoughness: 0.5,
-    sheen: 0.0,            // DISABLED
+    sheen: 0.08,
+    sheenColor: new THREE.Color(0xffe4c4),
+    sheenRoughness: 0.5,
     ior: 1.45,
   })
 }
@@ -478,7 +480,7 @@ function CinematicLighting({ discipline }: { discipline: number }) {
         position={[4, 6, 4]}
         angle={Math.PI / 6}
         penumbra={0.3}
-        intensity={400}        // Reduced from 800
+        intensity={500}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -488,7 +490,7 @@ function CinematicLighting({ discipline }: { discipline: number }) {
       {/* Fill Light - Soft fill */}
       <directionalLight
         position={[-3, 2, 3]}
-        intensity={150}        // Reduced from 300
+        intensity={200}
         color="#ffeedd"
       />
       
@@ -497,7 +499,7 @@ function CinematicLighting({ discipline }: { discipline: number }) {
         position={[0, 4, -3]}
         angle={Math.PI / 4}
         penumbra={0.5}
-        intensity={150}        // Reduced from 300
+        intensity={200}
         color="#ccddff"
       />
       
@@ -565,15 +567,15 @@ export default function RealisticAvatarV4({
         {/* Post-Processing */}
         <EffectComposer>
           <Bloom 
-            intensity={0.08}          // Reduced from 0.15
-            luminanceThreshold={0.9}  // Increased from 0.8
-            luminanceSmoothing={0.3}
+            intensity={0.06}
+            luminanceThreshold={0.92}
+            luminanceSmoothing={0.4}
             height={300}
           />
           <SSAO 
             samples={16}
             radius={0.5}
-            intensity={10}          // Reduced from 15
+            intensity={8}
             luminanceInfluence={0.5}
           />
         </EffectComposer>
