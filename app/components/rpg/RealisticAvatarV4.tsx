@@ -31,11 +31,11 @@ type RealisticAvatarV4Props = {
 function createSkinMaterial(color: string) {
   return new THREE.MeshPhysicalMaterial({
     color: color,
-    roughness: 0.35,
+    roughness: 0.4,
     metalness: 0.0,
-    clearcoat: 0.3,
-    clearcoatRoughness: 0.25,
-    sheen: 0.25,
+    clearcoat: 0.15,      // Reduced from 0.3
+    clearcoatRoughness: 0.4,
+    sheen: 0.1,           // Reduced from 0.25
     sheenColor: new THREE.Color(0xffe4c4),
     sheenRoughness: 0.5,
     ior: 1.45,
@@ -499,7 +499,7 @@ function CinematicLighting({ discipline }: { discipline: number }) {
         position={[0, 4, -3]}
         angle={Math.PI / 4}
         penumbra={0.5}
-        intensity={500}
+        intensity={300}         // Reduced from 500
         color="#ccddff"
       />
       
@@ -567,15 +567,15 @@ export default function RealisticAvatarV4({
         {/* Post-Processing */}
         <EffectComposer>
           <Bloom 
-            intensity={0.4}
-            luminanceThreshold={0.6}
+            intensity={0.15}          // Reduced from 0.4
+            luminanceThreshold={0.8}  // Increased from 0.6
             luminanceSmoothing={0.3}
             height={300}
           />
           <SSAO 
             samples={16}
             radius={0.5}
-            intensity={20}
+            intensity={15}          // Reduced from 20
             luminanceInfluence={0.5}
           />
         </EffectComposer>
