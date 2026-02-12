@@ -58,7 +58,7 @@ export default function RealisticAvatarV3({
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
-        camera={{ position: [0, 0, 10], fov: 28 }}
+        camera={{ position: [2.5, 1.5, 6], fov: 32 }}
         gl={{ 
           antialias: true, 
           alpha: true,
