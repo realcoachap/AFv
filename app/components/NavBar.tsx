@@ -16,9 +16,9 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
   const dashboardLink = role === 'admin' ? '/admin/dashboard' : '/client/dashboard'
 
   const rpgLinks = [
+    { label: '🆕 Avatar V4', href: '/client/rpg/avatars/v4' },
     { label: '🧪 Enhancement Lab', href: '/client/rpg/avatar-lab' },
     { label: '🏋️ Mannequin.js', href: '/client/rpg/avatar-mannequin' },
-    { label: '🧪 Avatar Prototypes', href: '/client/rpg/avatar-prototypes' },
     { label: '🎮 Avatars V3', href: '/client/rpg/avatars/realistic' },
     { label: '🧠 AI Texture', href: '/client/rpg/avatar-ai-texture' },
     { label: '🎭 VRoid Demo', href: '/client/rpg/vroid-demo' },
