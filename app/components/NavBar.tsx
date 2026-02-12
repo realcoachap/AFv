@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 import { APP_VERSION } from '@/app/lib/version'
 
 interface NavBarProps {
@@ -13,6 +14,7 @@ interface NavBarProps {
 
 export default function NavBar({ role, backLink, backText }: NavBarProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const dashboardLink = role === 'admin' ? '/admin/dashboard' : '/client/dashboard'
 
   const rpgLinks = [
@@ -27,6 +29,10 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
     { label: '📸 Share Cards', href: '/client/rpg/share-cards' },
     { label: '🔄 RPM Creator', href: '/client/rpg/avatar-creator-rpm' },
   ]
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: '/login' })
+  }
 
   return (
     <nav className="bg-[#1A2332] text-white p-4">
@@ -81,15 +87,64 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
             </>
           )}
           
+          {role === 'admin' && (
+            <>
+              <Link href="/admin/clients" className="text-gray-300 hover:text-white">
+                Clients
+              </Link>
+              <Link href="/admin/schedule" className="text-gray-300 hover:text-white">
+                Schedule
+              </Link>
+              <Link href="/admin/research-portal" className="text-[#E8DCC4] hover:text-white">
+                🔬 Research
+              </Link>
+            </>
+          )}
+          
           {backLink && (
             <Link href={backLink} className="text-gray-300 hover:text-white">
               {backText || '← Back'}
             </Link>
           )}
           
+          {/* Logout Button */}
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="text-red-400 hover:text-red-300 text-sm font-medium"
+            title="Logout"
+          >
+            🚪
+          </button>
+          
           <span className="text-xs text-gray-500 hidden sm:inline">v{APP_VERSION}</span>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#1A2332] border border-gray-700 rounded-xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-bold text-white mb-2">Logout?</h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
