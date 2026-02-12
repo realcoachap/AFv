@@ -192,20 +192,38 @@ export default function AvatarPrototypesPage() {
   useEffect(() => {
     if (!canvasRef.current) return
 
+    const canvas = canvasRef.current
+    const container = canvas.parentElement
+    if (!container) return
+
     // Scene setup
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0x1a2332)
     sceneRef.current = scene
 
-    const camera = new THREE.PerspectiveCamera(45, 800 / 500, 0.1, 100)
+    // Responsive camera
+    const aspect = container.clientWidth / container.clientHeight
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100)
     camera.position.set(0, 1, 4)
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true })
-    renderer.setSize(800, 500)
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+    renderer.setSize(container.clientWidth, container.clientHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.0
+
+    // Handle resize
+    const handleResize = () => {
+      if (!container) return
+      const width = container.clientWidth
+      const height = container.clientHeight
+      camera.aspect = width / height
+      camera.updateProjectionMatrix()
+      renderer.setSize(width, height)
+    }
+    window.addEventListener('resize', handleResize)
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement)
@@ -259,6 +277,7 @@ export default function AvatarPrototypesPage() {
     animate()
 
     return () => {
+      window.removeEventListener('resize', handleResize)
       renderer.dispose()
     }
   }, [])
@@ -388,8 +407,8 @@ export default function AvatarPrototypesPage() {
         </div>
 
         {/* 3D Canvas */}
-        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl mb-6">
-          <canvas ref={canvasRef} className="w-full h-[500px]" />
+        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl mb-6 aspect-[4/3] md:aspect-[16/9]">
+          <canvas ref={canvasRef} className="w-full h-full block" />
         </div>
 
         {/* Muscle Scale Control (for applicable prototypes) */}
