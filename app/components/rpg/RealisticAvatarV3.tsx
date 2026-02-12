@@ -1,7 +1,8 @@
 'use client'
 
 /**
- * Realistic Avatar 3D v3.2 - Post-Processing Enhanced
+ * Realistic Avatar 3D v3.3 - MeshPhysicalMaterial Upgrade
+ * Enhanced skin-like appearance with clearcoat, sheen, and PBR materials
  * Bloom, ambient occlusion, better lighting for premium look
  */
 
@@ -223,18 +224,26 @@ function Head({
   eyeColor: string
   discipline: number
 }) {
+  // UPGRADED: Enhanced MeshPhysicalMaterial for skin-like appearance
   const skinMat = useMemo(() => new THREE.MeshPhysicalMaterial({
     color: skinColor,
-    roughness: 0.5,
-    metalness: 0,
-    clearcoat: 0.1,
-    sheen: 0.15,
-    sheenColor: new THREE.Color(0xffdbac),
+    roughness: 0.35,           // Smoother for skin-like feel
+    metalness: 0.0,
+    clearcoat: 0.4,            // Waxy/shiny surface layer
+    clearcoatRoughness: 0.2,
+    sheen: 0.3,                // Subtle skin glow
+    sheenColor: new THREE.Color(0xffe4c4),
+    sheenRoughness: 0.5,
+    ior: 1.45,                 // Index of refraction for skin
+    transmission: 0.0,
+    thickness: 0.0,
   }), [skinColor])
 
-  const hairMat = useMemo(() => new THREE.MeshStandardMaterial({
+  const hairMat = useMemo(() => new THREE.MeshPhysicalMaterial({
     color: hairColor,
-    roughness: 0.8,
+    roughness: 0.7,
+    metalness: 0.1,
+    clearcoat: 0.15,
   }), [hairColor])
 
   const browAngle = discipline > 50 ? -0.2 : 0
@@ -329,7 +338,13 @@ function Eye({ position, color }: { position: [number, number, number]; color: s
 }
 
 function Hair({ style, color }: { style: string; color: string }) {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({ color, roughness: 0.75 }), [color])
+  // UPGRADED: Physical material for hair
+  const mat = useMemo(() => new THREE.MeshPhysicalMaterial({ 
+    color, 
+    roughness: 0.6,
+    metalness: 0.1,
+    clearcoat: 0.2,
+  }), [color])
   
   switch (style) {
     case 'bald':
@@ -398,12 +413,48 @@ function Body({
   const muscleScale = 0.8 + (strength / 100) * 0.35
   const hasDefinition = strength > 35
 
+  // UPGRADED: Physical materials for clothing and skin
+  const shirtMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: shirtColor,
+    roughness: 0.6,
+    metalness: 0.1,
+    clearcoat: 0.2,
+    clearcoatRoughness: 0.3,
+  }), [shirtColor])
+
+  const shortsMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: shortsColor,
+    roughness: 0.7,
+    metalness: 0.0,
+    clearcoat: 0.15,
+  }), [shortsColor])
+
+  const skinMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: skinColor,
+    roughness: 0.35,
+    metalness: 0.0,
+    clearcoat: 0.3,
+    clearcoatRoughness: 0.25,
+    sheen: 0.25,
+    sheenColor: new THREE.Color(0xffe4c4),
+    ior: 1.45,
+  }), [skinColor])
+
+  const accentMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: accentColor,
+    roughness: 0.4,
+    metalness: 0.2,
+    clearcoat: 0.5,
+    emissive: accentColor,
+    emissiveIntensity: 0.15,
+  }), [accentColor])
+
   return (
     <group position={[0, 1.15, 0]}>
       {/* Chest/Torso - smooth rounded shape */}
       <mesh castShadow>
         <capsuleGeometry args={[0.28 * muscleScale, 0.45, 8, 16]} />
-        <meshStandardMaterial color={shirtColor} roughness={0.7} />
+        <primitive object={shirtMat} attach="material" />
       </mesh>
       
       {/* Chest definition */}
@@ -411,11 +462,11 @@ function Body({
         <>
           <mesh position={[-0.12, 0.1, 0.22]} castShadow>
             <sphereGeometry args={[0.1 * muscleScale, 12, 12]} />
-            <meshStandardMaterial color={shirtColor} roughness={0.6} />
+            <primitive object={shirtMat} attach="material" />
           </mesh>
           <mesh position={[0.12, 0.1, 0.22]} castShadow>
             <sphereGeometry args={[0.1 * muscleScale, 12, 12]} />
-            <meshStandardMaterial color={shirtColor} roughness={0.6} />
+            <primitive object={shirtMat} attach="material" />
           </mesh>
         </>
       )}
@@ -423,13 +474,13 @@ function Body({
       {/* Accent stripe on shirt */}
       <mesh position={[0, 0.12, 0.27]}>
         <boxGeometry args={[0.4 * muscleScale, 0.04, 0.02]} />
-        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={0.2} />
+        <primitive object={accentMat} attach="material" />
       </mesh>
       
       {/* Abs/Stomach area */}
       <mesh position={[0, -0.35, 0]} castShadow>
         <capsuleGeometry args={[0.22 * muscleScale, 0.35, 8, 16]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Six pack definition */}
@@ -439,7 +490,7 @@ function Body({
             [-0.15, -0.05, 0.05].map((y, i) => (
               <mesh key={`${x}-${i}`} position={[x, y, 0.18]} castShadow>
                 <sphereGeometry args={[0.045, 8, 8]} />
-                <meshStandardMaterial color={skinColor} roughness={0.4} />
+                <primitive object={skinMat} attach="material" />
               </mesh>
             ))
           )}
@@ -449,87 +500,129 @@ function Body({
       {/* Shorts - smooth shape */}
       <mesh position={[0, -0.85, 0]} castShadow>
         <capsuleGeometry args={[0.26 * muscleScale, 0.4, 8, 16]} />
-        <meshStandardMaterial color={shortsColor} roughness={0.8} />
+        <primitive object={shortsMat} attach="material" />
       </mesh>
       
       {/* Waistband */}
       <mesh position={[0, -0.65, 0.18]}>
         <boxGeometry args={[0.45 * muscleScale, 0.06, 0.03]} />
-        <meshStandardMaterial color={accentColor} />
+        <primitive object={accentMat} attach="material" />
       </mesh>
     </group>
   )
 }
+}
 
 // ============================================
-// SMOOTH ARM
+// SMOOTH ARM - UPGRADED MATERIALS
 // ============================================
 function Arm({ side, strength, shirtColor, skinColor }: { side: 'left' | 'right'; strength: number; shirtColor: string; skinColor: string }) {
   const xOffset = side === 'left' ? -0.38 : 0.38
   const muscleScale = 0.8 + (strength / 100) * 0.3
+
+  const shirtMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: shirtColor,
+    roughness: 0.6,
+    metalness: 0.1,
+    clearcoat: 0.2,
+  }), [shirtColor])
+
+  const skinMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: skinColor,
+    roughness: 0.35,
+    metalness: 0.0,
+    clearcoat: 0.3,
+    sheen: 0.25,
+    sheenColor: new THREE.Color(0xffe4c4),
+    ior: 1.45,
+  }), [skinColor])
 
   return (
     <group position={[xOffset, 1.35, 0]}>
       {/* Shoulder - smooth cap */}
       <mesh castShadow>
         <sphereGeometry args={[0.16 * muscleScale, 16, 16]} />
-        <meshStandardMaterial color={shirtColor} roughness={0.7} />
+        <primitive object={shirtMat} attach="material" />
       </mesh>
       
       {/* Upper arm */}
       <mesh position={[0, -0.32, 0]} castShadow>
         <capsuleGeometry args={[0.09 * muscleScale, 0.45, 8, 16]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Bicep */}
       {strength > 25 && (
         <mesh position={[side === 'left' ? -0.03 : 0.03, -0.22, 0.04]} castShadow>
           <sphereGeometry args={[0.08 * muscleScale, 12, 12]} />
-          <meshStandardMaterial color={skinColor} roughness={0.5} />
+          <primitive object={skinMat} attach="material" />
         </mesh>
       )}
       
       {/* Elbow */}
       <mesh position={[0, -0.6, 0]}>
         <sphereGeometry args={[0.065, 10, 10]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Forearm */}
       <mesh position={[0, -0.95, 0]} castShadow>
         <capsuleGeometry args={[0.07 * muscleScale, 0.45, 8, 16]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Hand */}
       <mesh position={[0, -1.25, 0.02]} castShadow>
         <sphereGeometry args={[0.075, 10, 10]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
     </group>
   )
 }
 
 // ============================================
-// SMOOTH LEG
+// SMOOTH LEG - UPGRADED MATERIALS
 // ============================================
 function Leg({ side, strength, shortsColor, skinColor }: { side: 'left' | 'right'; strength: number; shortsColor: string; skinColor: string }) {
   const xOffset = side === 'left' ? -0.16 : 0.16
   const muscleScale = 0.85 + (strength / 100) * 0.25
+
+  const shortsMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: shortsColor,
+    roughness: 0.7,
+    metalness: 0.0,
+    clearcoat: 0.15,
+  }), [shortsColor])
+
+  const skinMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: skinColor,
+    roughness: 0.35,
+    metalness: 0.0,
+    clearcoat: 0.3,
+    sheen: 0.25,
+    sheenColor: new THREE.Color(0xffe4c4),
+    ior: 1.45,
+  }), [skinColor])
+
+  const shoeMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: '#1a1a1a',
+    roughness: 0.8,
+    metalness: 0.1,
+    clearcoat: 0.1,
+  }), [])
 
   return (
     <group position={[xOffset, 0.3, 0]}>
       {/* Hip */}
       <mesh position={[0, 0.1, -0.05]} castShadow>
         <sphereGeometry args={[0.18 * muscleScale, 14, 14]} />
-        <meshStandardMaterial color={shortsColor} roughness={0.8} />
+        <primitive object={shortsMat} attach="material" />
       </mesh>
       
       {/* Thigh */}
       <mesh position={[0, -0.25, 0]} castShadow>
         <capsuleGeometry args={[0.14 * muscleScale, 0.55, 8, 16]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Quad definition */}
@@ -537,11 +630,11 @@ function Leg({ side, strength, shortsColor, skinColor }: { side: 'left' | 'right
         <>
           <mesh position={[-0.04, -0.2, 0.1]} castShadow>
             <sphereGeometry args={[0.055 * muscleScale, 10, 10]} />
-            <meshStandardMaterial color={skinColor} />
+            <primitive object={skinMat} attach="material" />
           </mesh>
           <mesh position={[0.04, -0.2, 0.1]} castShadow>
             <sphereGeometry args={[0.055 * muscleScale, 10, 10]} />
-            <meshStandardMaterial color={skinColor} />
+            <primitive object={skinMat} attach="material" />
           </mesh>
         </>
       )}
@@ -549,27 +642,27 @@ function Leg({ side, strength, shortsColor, skinColor }: { side: 'left' | 'right
       {/* Knee */}
       <mesh position={[0, -0.6, 0]}>
         <sphereGeometry args={[0.09, 12, 12]} />
-        <meshStandardMaterial color={skinColor} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Calf */}
       <mesh position={[0, -1.0, -0.02]} castShadow>
         <capsuleGeometry args={[0.1 * muscleScale, 0.5, 8, 16]} />
-        <meshStandardMaterial color={skinColor} roughness={0.5} />
+        <primitive object={skinMat} attach="material" />
       </mesh>
       
       {/* Calf muscle */}
       {strength > 40 && (
         <mesh position={[0, -0.95, -0.08]} castShadow>
           <sphereGeometry args={[0.07 * muscleScale, 10, 10]} />
-          <meshStandardMaterial color={skinColor} />
+          <primitive object={skinMat} attach="material" />
         </mesh>
       )}
       
       {/* Shoe */}
       <mesh position={[0, -1.4, 0.05]} castShadow>
         <boxGeometry args={[0.12, 0.15, 0.25]} />
-        <meshStandardMaterial color="#1a1a1a" roughness={0.9} />
+        <primitive object={shoeMat} attach="material" />
       </mesh>
     </group>
   )
