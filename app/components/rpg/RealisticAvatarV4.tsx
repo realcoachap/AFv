@@ -67,27 +67,6 @@ function createAccentMaterial(color: string) {
 // MODULAR BODY PARTS
 // ============================================
 
-// Individual muscle component that can scale
-function MusclePart({ 
-  geometry, 
-  material, 
-  scale = 1, 
-  position, 
-  castShadow = true 
-}: { 
-  geometry: THREE.BufferGeometry
-  material: THREE.Material
-  scale?: number
-  position?: [number, number, number]
-  castShadow?: boolean
-}) {
-  return (
-    <mesh geometry={geometry} material={material} position={position} castShadow={castShadow}>
-      <scale args={[scale, scale, scale]} />
-    </mesh>
-  )
-}
-
 // Head with face details
 function Head({ 
   skinColor, 
