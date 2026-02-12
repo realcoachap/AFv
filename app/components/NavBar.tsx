@@ -16,12 +16,12 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
   return (
     <nav className="bg-[#1A2332] text-white p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <!-- Logo -->
+        {/* Logo */}
         <Link href={dashboardLink}>
           <Image src="/logo.jpg" alt="Logo" width={48} height={48} className="w-12 h-12" priority />
         </Link>
 
-        <!-- Nav Links -->
+        {/* Nav Links */}
         <div className="flex items-center gap-4">
           <Link href="/client/resources" className="text-gray-300 hover:text-white">Resources</Link>
           
