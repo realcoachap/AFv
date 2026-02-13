@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react'
-import RealisticAvatarV4 from '@/app/components/rpg/RealisticAvatarV4'
+import RealisticAvatarV4 from '@/app/components/rpg/RealisticAvatarV4Wrapper'
 import NavBar from '@/app/components/NavBar'
 
 const demoCharacters = [
