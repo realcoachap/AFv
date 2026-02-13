@@ -28,6 +28,9 @@ function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
   
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
     }
