@@ -9,7 +9,6 @@
 
 import { getStatModifiers } from '@/app/lib/rpg/stats'
 import { calculateSVGBodyProportions, getColorScheme } from '@/app/lib/rpg/avatar-helpers'
-import type { AvatarSize } from '@/app/lib/rpg/avatar-helpers'
 
 type AvatarProps = {
   strength: number
@@ -42,7 +41,7 @@ export default function Avatar({
   const scheme = getColorScheme(colorScheme)
 
   // Use shared body proportions calculation
-  const body = calculateSVGBodyProportions(strength, endurance)
+  const baseBody = calculateSVGBodyProportions(strength, endurance)
   
   // Apply leanness modifiers to body proportions
   const getBodyProportions = () => {
@@ -63,14 +62,7 @@ export default function Avatar({
         legThickness: 8,
       }
     }
-    return body
-  }
-
-  const finalBody = getBodyProportions()
-      }
-    }
-
-    return base
+    return baseBody
   }
 
   const body = getBodyProportions()
@@ -169,101 +161,94 @@ export default function Avatar({
         {/* Torso (shirt) */}
         <path
           d={`
-            M ${width / 2 - finalBody.shoulderWidth / 2} 80
-            L ${width / 2 + finalBody.shoulderWidth / 2} 80
-            L ${width / 2 + finalBody.chestWidth / 2} 120
-            L ${width / 2 + finalBody.waistWidth / 2} 145
-            L ${width / 2 - finalBody.waistWidth / 2} 145
-            L ${width / 2 - finalBody.chestWidth / 2} 120
+            M ${width / 2 - body.shoulderWidth / 2} 80
+            L ${width / 2 + body.shoulderWidth / 2} 80
+            L ${width / 2 + body.chestWidth / 2} 120
+            L ${width / 2 + body.waistWidth / 2} 145
+            L ${width / 2 - body.waistWidth / 2} 145
+            L ${width / 2 - body.chestWidth / 2} 120
             Z
           `}
           fill={scheme.primary}
-          stroke={scheme.primary}
+          stroke={scheme.secondary}
           strokeWidth="2"
         />
 
-        {/* Accent line on shirt */}
+        {/* Chest definition line */}
         <path
-          d={`
-            M ${width / 2 - finalBody.chestWidth / 2 + 5} 100
-            L ${width / 2 + finalBody.chestWidth / 2 - 5} 100
-          `}
-          stroke={scheme.accent}
-          strokeWidth="2"
-          opacity="0.7"
+          d={`M ${width / 2 - body.chestWidth / 2 + 5} 100 L ${width / 2 + body.chestWidth / 2 - 5} 100`}
+          stroke={scheme.secondary}
+          strokeWidth="1"
+          opacity="0.5"
         />
 
         {/* Arms */}
-        {/* Left arm */}
         <rect
-          x={width / 2 - finalBody.shoulderWidth / 2 - finalBody.armThickness}
-          y={85}
-          width={finalBody.armThickness}
-          height={50}
+          x={width / 2 - body.shoulderWidth / 2 - body.armThickness}
+          y={82}
+          width={body.armThickness}
+          height={35}
+          rx={body.armThickness / 2}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={finalBody.armThickness / 2}
         />
-        {/* Right arm */}
         <rect
-          x={width / 2 + finalBody.shoulderWidth / 2}
-          y={85}
-          width={finalBody.armThickness}
-          height={50}
+          x={width / 2 + body.shoulderWidth / 2}
+          y={82}
+          width={body.armThickness}
+          height={35}
+          rx={body.armThickness / 2}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={finalBody.armThickness / 2}
         />
 
         {/* Shorts/Pants */}
         <rect
-          x={width / 2 - finalBody.waistWidth / 2}
-          y={145}
-          width={finalBody.waistWidth}
-          height={35}
+          x={width / 2 - body.waistWidth / 2}
+          y={143}
+          width={body.waistWidth}
+          height={25}
           fill={scheme.secondary}
           stroke={scheme.primary}
           strokeWidth="2"
         />
 
         {/* Legs */}
-        {/* Left leg */}
         <rect
-          x={width / 2 - finalBody.waistWidth / 2 + 2}
-          y={178}
-          width={finalBody.legThickness}
-          height={45}
+          x={width / 2 - body.waistWidth / 2 + 2}
+          y={166}
+          width={body.legThickness}
+          height={30}
+          rx={body.legThickness / 2}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={finalBody.legThickness / 2}
         />
-        {/* Right leg */}
         <rect
-          x={width / 2 + finalBody.waistWidth / 2 - finalBody.legThickness - 2}
-          y={178}
-          width={finalBody.legThickness}
-          height={45}
+          x={width / 2 + body.waistWidth / 2 - body.legThickness - 2}
+          y={166}
+          width={body.legThickness}
+          height={30}
+          rx={body.legThickness / 2}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={finalBody.legThickness / 2}
         />
 
         {/* Shoes */}
         <ellipse
-          cx={width / 2 - finalBody.waistWidth / 2 + 2 + finalBody.legThickness / 2}
-          cy={230}
-          rx={finalBody.legThickness + 2}
+          cx={width / 2 - body.waistWidth / 2 + 2 + body.legThickness / 2}
+          cy={198}
+          rx={body.legThickness + 2}
           ry={6}
           fill={scheme.primary}
         />
         <ellipse
-          cx={width / 2 + finalBody.waistWidth / 2 - finalBody.legThickness / 2 - 2}
-          cy={230}
-          rx={finalBody.legThickness + 2}
+          cx={width / 2 + body.waistWidth / 2 - body.legThickness / 2 - 2}
+          cy={198}
+          rx={body.legThickness + 2}
           ry={6}
           fill={scheme.primary}
         />
