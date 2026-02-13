@@ -22,7 +22,8 @@ export default {
         // Apply rate limiting based on IP
         const forwardedFor = req.headers?.get('x-forwarded-for')
         const realIp = req.headers?.get('x-real-ip')
-        const identifier = forwardedFor?.split(',')[0]?.trim() || realIp || credentials?.email || 'anonymous'
+        const email = credentials?.email as string | undefined
+        const identifier = forwardedFor?.split(',')[0]?.trim() || realIp || email || 'anonymous'
         
         const rateLimitResult = await rateLimitAuth(identifier)
         if (!rateLimitResult.success) {
