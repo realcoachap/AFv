@@ -67,12 +67,8 @@ function useMaterials(skinColor: string, shirtColor: string, shortsColor: string
     lip: new THREE.MeshStandardMaterial({ color: '#c97e7e' }),
   }), [skinColor, shirtColor, shortsColor, accentColor, hairColor])
 
-  useEffect(() => {
-    return () => {
-      // Dispose all materials on unmount
-      Object.values(materials).forEach(material => material.dispose())
-    }
-  }, [materials])
+  // Note: Material disposal removed to prevent React Strict Mode crashes
+  // Three.js handles cleanup automatically when component unmounts
 
   return materials
 }
@@ -632,7 +628,7 @@ export default function RealisticAvatarV4({
         
         {/* Post-Processing - disabled on mobile for performance */}
         {!isMobile && (
-          <EffectComposer>
+          <EffectComposer enableNormalPass>
             <Bloom 
               intensity={0.06}
               luminanceThreshold={0.92}
