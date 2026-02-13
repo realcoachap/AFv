@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { rateLimitAuth } from '@/lib/rate-limiter'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -17,7 +18,18 @@ export default {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        // Apply rate limiting based on IP
+        const forwardedFor = req.headers?.get('x-forwarded-for')
+        const realIp = req.headers?.get('x-real-ip')
+        const identifier = forwardedFor?.split(',')[0]?.trim() || realIp || credentials?.email || 'anonymous'
+        
+        const rateLimitResult = await rateLimitAuth(identifier)
+        if (!rateLimitResult.success) {
+          // Rate limit exceeded - throw error that will be caught
+          throw new Error('Too many login attempts. Please try again later.')
+        }
+
         const validatedFields = loginSchema.safeParse(credentials)
 
         if (!validatedFields.success) {

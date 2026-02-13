@@ -1,7 +1,7 @@
 /**
  * Agent Team Orchestrator
  * Manages parallel execution of specialized development agents
- * 
+ *
  * Codename: LEGION
  */
 
@@ -9,12 +9,23 @@ import { AGENT_DEFINITIONS, AgentType, AgentTask } from './definitions'
 import { AgentMemory } from './memory'
 
 // Generate simple ID without uuid package
-const generateId = () => Math.random().toString(36).substring(2, 15)
+const generateId = (): string => Math.random().toString(36).substring(2, 15)
+
+// Agent message structure for session history
+interface AgentMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string
+}
+
+// Session history structure
+interface SessionHistory {
+  messages: AgentMessage[]
+}
 
 export interface AgentTeamConfig {
   mission: string
   agents: AgentType[]
-  context?: Record<string, any>
+  context?: Record<string, unknown>
   timeout?: number // seconds per agent
   parallel?: boolean
 }
@@ -63,9 +74,6 @@ export class AgentTeam {
    * Execute the agent team mission
    */
   async execute(): Promise<TeamResult> {
-    console.log(`⚔️ LEGION DEPLOYED: ${this.mission}`)
-    console.log(`🛡️ Agents: ${this.agents.join(', ')}`)
-    
     // Phase 1: Spawn all agents
     if (this.parallel) {
       await this.spawnParallel()
@@ -114,8 +122,6 @@ export class AgentTeam {
   private async spawnAgent(agentType: AgentType): Promise<AgentResult> {
     const agentDef = AGENT_DEFINITIONS[agentType]
     const task = this.createAgentTask(agentType)
-    
-    console.log(`🚀 Deploying ${agentDef.codename}...`)
 
     try {
       // Create system prompt with memory
@@ -125,11 +131,10 @@ export class AgentTeam {
       // Spawn the agent session
       // NOTE: In production, this would call the actual sessions_spawn API
       // For now, we simulate the agent execution
-      console.log(`   🤖 ${agentDef.codename} would execute task: ${task.substring(0, 100)}...`)
-      
+
       // Simulate async execution
       await new Promise(resolve => setTimeout(resolve, 100))
-      
+
       const result = {
         sessionKey: `mock-session-${generateId()}`,
         status: 'success',
@@ -144,7 +149,6 @@ export class AgentTeam {
       }
 
     } catch (error) {
-      console.error(`❌ ${agentDef.codename} failed to deploy:`, error)
       return {
         agent: agentType,
         sessionKey: '',
@@ -159,7 +163,7 @@ export class AgentTeam {
    */
   private createAgentTask(agentType: AgentType): string {
     const agentDef = AGENT_DEFINITIONS[agentType]
-    
+
     const tasks: Record<AgentType, string> = {
       architect: this.createArchitectTask(),
       frontliner: this.createFrontlinerTask(),
@@ -182,7 +186,7 @@ export class AgentTeam {
     while (Date.now() - startTime < maxWait) {
       // Check all agent statuses
       const running = this.results.filter(r => r.status === 'running')
-      
+
       if (running.length === 0) break
 
       // Update statuses
@@ -214,10 +218,8 @@ export class AgentTeam {
    * Synthesize results from all agents
    */
   private async synthesizeResults(): Promise<string> {
-    console.log('🧠 Synthesizing agent outputs...')
-
     const successful = this.results.filter(r => r.status === 'success')
-    
+
     if (successful.length === 0) {
       return 'All agents failed. Review individual errors.'
     }
@@ -255,12 +257,12 @@ All components have been integrated. Ready for deployment.
   /**
    * Helper: Extract output from session history
    */
-  private extractOutput(history: any): string {
+  private extractOutput(history: SessionHistory): string {
     if (!history.messages) return ''
-    
+
     const assistantMessages = history.messages
-      .filter((m: any) => m.role === 'assistant')
-      .map((m: any) => m.content)
+      .filter((m: AgentMessage) => m.role === 'assistant')
+      .map((m: AgentMessage) => m.content)
       .join('\n\n')
 
     return assistantMessages

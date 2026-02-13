@@ -6,7 +6,7 @@
  * Supports animations and customization
  */
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useGLTF, useAnimations, OrbitControls, Environment, ContactShadows, Center } from '@react-three/drei'
 import * as THREE from 'three'
@@ -37,6 +37,22 @@ interface VRoidCharacterProps {
   characterName?: string
 }
 
+// Mobile detection hook
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+  
+  return isMobile
+}
+
 // The 3D character component
 function CharacterModel({
   modelUrl,
@@ -50,6 +66,33 @@ function CharacterModel({
   const groupRef = useRef<THREE.Group>(null)
   const { scene, animations } = useGLTF(modelUrl)
   const { actions } = useAnimations(animations, groupRef)
+  
+  // Clone scene only once and memoize it
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone()
+    return clone
+  }, [scene])
+  
+  // Cleanup cloned scene on unmount
+  useEffect(() => {
+    return () => {
+      // Dispose of all geometries and materials in the cloned scene
+      clonedScene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          if (object.geometry) {
+            object.geometry.dispose()
+          }
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach((material) => material.dispose())
+            } else {
+              object.material.dispose()
+            }
+          }
+        }
+      })
+    }
+  }, [clonedScene])
   
   // Play animation
   useEffect(() => {
@@ -69,9 +112,6 @@ function CharacterModel({
       groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.3
     }
   })
-  
-  // Clone scene to avoid modifying original
-  const clonedScene = scene.clone()
   
   return (
     <group 
@@ -102,11 +142,15 @@ export default function VRoidCharacter({
 }: VRoidCharacterProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const isMobile = useIsMobile()
   
   // Preload model
   useEffect(() => {
     useGLTF.preload(modelUrl)
   }, [modelUrl])
+  
+  // Reduce shadow resolution on mobile
+  const shadowMapSize = isMobile ? 512 : 1024
   
   return (
     <div className="relative w-full h-full">
@@ -114,7 +158,7 @@ export default function VRoidCharacter({
         shadows
         camera={{ position: [0, 1, 3], fov: 45 }}
         gl={{ 
-          antialias: true, 
+          antialias: !isMobile, 
           alpha: true,
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.0
@@ -123,16 +167,16 @@ export default function VRoidCharacter({
       >
         <Environment preset={envPreset} />
         
-        {/* Lighting */}
-        <ambientLight intensity={0.4} />
+        {/* Lighting - reduced on mobile */}
+        <ambientLight intensity={isMobile ? 0.6 : 0.4} />
         <directionalLight 
           position={[5, 5, 5]} 
-          intensity={1} 
+          intensity={isMobile ? 0.7 : 1} 
           castShadow 
-          shadow-mapSize={[1024, 1024]}
+          shadow-mapSize={[shadowMapSize, shadowMapSize]}
         />
-        <directionalLight position={[-5, 2, 5]} intensity={0.5} />
-        <directionalLight position={[0, 5, -5]} intensity={0.3} />
+        <directionalLight position={[-5, 2, 5]} intensity={isMobile ? 0.3 : 0.5} />
+        <directionalLight position={[0, 5, -5]} intensity={isMobile ? 0.2 : 0.3} />
         <Center>
           <CharacterModel
             modelUrl={modelUrl}
@@ -147,10 +191,11 @@ export default function VRoidCharacter({
         
         <ContactShadows
           position={[0, -1.5, 0]}
-          opacity={0.5}
+          opacity={isMobile ? 0.3 : 0.5}
           scale={8}
-          blur={2}
+          blur={isMobile ? 1.5 : 2}
           far={3}
+          resolution={isMobile ? 128 : 256}
         />
         
         {enableOrbit && (
@@ -161,6 +206,8 @@ export default function VRoidCharacter({
             maxDistance={6}
             minPolarAngle={Math.PI / 3}
             maxPolarAngle={Math.PI / 1.8}
+            autoRotate={autoRotate}
+            autoRotateSpeed={isMobile ? 0.3 : 0.5}
           />
         )}
       </Canvas>

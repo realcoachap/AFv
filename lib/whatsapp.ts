@@ -47,14 +47,12 @@ export async function sendWhatsAppMessage({ to, message }: SendMessageParams) {
     const data = await response.json()
 
     if (response.ok) {
-      console.log('✅ WhatsApp message sent:', data.sid)
       return {
         success: true,
         messageId: data.sid,
         status: data.status,
       }
     } else {
-      console.error('❌ Twilio error:', data)
       return {
         success: false,
         error: data.message || 'Failed to send message',
@@ -62,7 +60,6 @@ export async function sendWhatsAppMessage({ to, message }: SendMessageParams) {
       }
     }
   } catch (error) {
-    console.error('❌ WhatsApp send error:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

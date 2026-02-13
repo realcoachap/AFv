@@ -6,8 +6,6 @@
  */
 
 import { useState } from 'react'
-import RealisticAvatarV3 from '@/app/components/rpg/RealisticAvatarV3'
-import RealisticAvatarV2 from '@/app/components/rpg/RealisticAvatarV2'
 import NavBar from '@/app/components/NavBar'
 
 const demoCharacters = [
@@ -84,7 +82,7 @@ export default function RealisticAvatarDemoPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <NavBar role="client" />
-      
+
       <div className="p-6">
         <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
@@ -92,7 +90,7 @@ export default function RealisticAvatarDemoPage() {
           <div className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm">
             ⚔️ STRIKE 4: REALISTIC 3D
           </div>
-          
+
           <h1 className="text-5xl font-bold text-white">
             Next-Gen Avatar System
           </h1>
@@ -146,41 +144,12 @@ export default function RealisticAvatarDemoPage() {
 
         {/* Main Display */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Avatar */}
+          {/* Avatar Placeholder */}
           <div className="bg-gray-800/30 rounded-3xl p-8 border border-gray-700 flex items-center justify-center min-h-[600px]">
-            {selectedView === 'v3' ? (
-              <div className="text-center">
-                <RealisticAvatarV3
-                  level={selectedChar.level}
-                  strength={selectedChar.strength}
-                  endurance={selectedChar.endurance}
-                  discipline={selectedChar.discipline}
-                  colorScheme={selectedChar.customization.colorScheme}
-                  customization={selectedChar.customization}
-                  size="xl"
-                  autoRotate={true}
-                />
-                <p className="mt-4 text-gray-400 text-sm">
-                  ✨ V3 POLISHED - Smooth & Real
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <RealisticAvatarV2
-                  level={selectedChar.level}
-                  strength={selectedChar.strength}
-                  endurance={selectedChar.endurance}
-                  discipline={selectedChar.discipline}
-                  colorScheme={selectedChar.customization.colorScheme}
-                  customization={selectedChar.customization}
-                  size="xl"
-                  autoRotate={true}
-                />
-                <p className="mt-4 text-gray-400 text-sm">
-                  📦 V2 Original
-                </p>
-              </div>
-            )}
+            <div className="text-center">
+              <p className="text-gray-400 text-lg">🎮 Avatar Component Removed</p>
+              <p className="text-gray-500 text-sm mt-2">Using RealisticAvatarV4 in production</p>
+            </div>
           </div>
 
           {/* Info Panel */}
@@ -188,7 +157,7 @@ export default function RealisticAvatarDemoPage() {
             {/* Stats */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <h3 className="text-2xl font-bold text-white mb-4">{selectedChar.name}</h3>
-              
+
               <div className="space-y-4">
                 <StatBar label="Level" value={selectedChar.level} max={50} color="#A855F7" />
                 <StatBar label="Strength" value={selectedChar.strength} max={100} color="#EF4444" />
@@ -200,7 +169,7 @@ export default function RealisticAvatarDemoPage() {
             {/* Features */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <h3 className="text-xl font-bold text-white mb-4">Realistic Features</h3>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <FeatureItem icon="👤" text="Procedural Face" />
                 <FeatureItem icon="💪" text="Dynamic Muscles" />
@@ -216,7 +185,7 @@ export default function RealisticAvatarDemoPage() {
             {/* Tech Stack */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <h3 className="text-xl font-bold text-white mb-4">Tech Stack</h3>
-              
+
               <div className="flex flex-wrap gap-2">
                 <TechBadge text="Three.js" />
                 <TechBadge text="React Three Fiber" />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { Prisma, AppointmentStatus } from '@prisma/client'
 
 /**
  * GET /api/schedule
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Build query filters
-    const where: any = {}
+    const where: Prisma.AppointmentWhereInput = {}
 
     // Role-based filtering
     if (user.role === 'CLIENT') {
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
 
     // Status filter
     if (status) {
-      where.status = status
+      where.status = status as AppointmentStatus
     }
 
     // Date range filter

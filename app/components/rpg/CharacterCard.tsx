@@ -3,6 +3,7 @@ import { getLevelProgress } from '@/app/lib/rpg/levels'
 import { calculatePowerLevel } from '@/app/lib/rpg/stats'
 import { parseAvatarConfig } from '@/app/lib/rpg/customization'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
+import type { JsonValue } from '@prisma/client/runtime/library'
 
 type CharacterCardProps = {
   level: number
@@ -14,7 +15,7 @@ type CharacterCardProps = {
   longestStreak: number
   userName?: string
   use3D?: boolean
-  avatarConfig?: any // JSON from database
+  avatarConfig?: JsonValue
 }
 
 export default function CharacterCard({

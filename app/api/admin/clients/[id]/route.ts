@@ -107,9 +107,6 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
     
-    console.log('📝 Admin updating client profile:', id)
-    console.log('📱 Phone number in request:', body.phone)
-    
     const validatedData = profileUpdateSchema.parse(body)
 
     // Check if client exists
@@ -125,16 +122,11 @@ export async function PUT(
       )
     }
 
-    console.log('📞 Old phone:', client.clientProfile?.phone)
-    console.log('📞 New phone:', validatedData.phone)
-
     // Update profile
     const updatedProfile = await prisma.clientProfile.update({
       where: { userId: id },
       data: validatedData,
     })
-    
-    console.log('✅ Profile updated, new phone:', updatedProfile.phone)
 
     return NextResponse.json({
       message: 'Profile updated successfully',

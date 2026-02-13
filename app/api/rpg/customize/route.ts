@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { requireAuth, createErrorResponse, createSuccessResponse } from '@/app/lib/api-auth'
 import { prisma } from '@/lib/prisma'
 import { parseAvatarConfig, DEFAULT_CUSTOMIZATION } from '@/app/lib/rpg/customization'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
@@ -10,28 +10,23 @@ import type { AvatarCustomization } from '@/app/lib/rpg/customization'
  */
 export async function POST(request: Request) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    // Use shared auth helper
+    const authResult = await requireAuth()
+    if (!authResult.success) {
+      return authResult.response
     }
 
+    const { userId } = authResult.session.user
     const body = await request.json()
     const customization: Partial<AvatarCustomization> = body
 
     // Get user's RPG character (must exist)
     const character = await prisma.rPGCharacter.findUnique({
-      where: { userId: session.user.id },
+      where: { userId },
     })
 
     if (!character) {
-      return NextResponse.json(
-        { error: 'RPG character not found. Complete a session first!' },
-        { status: 404 }
-      )
+      return createErrorResponse('RPG character not found. Complete a session first!', 404)
     }
 
     // Parse existing config and merge with updates
@@ -43,22 +38,18 @@ export async function POST(request: Request) {
 
     // Update character with new config
     const updated = await prisma.rPGCharacter.update({
-      where: { userId: session.user.id },
+      where: { userId },
       data: {
         avatarConfig: updatedConfig,
       },
     })
 
-    return NextResponse.json({
-      success: true,
+    return createSuccessResponse({
       customization: parseAvatarConfig(updated.avatarConfig),
     })
   } catch (error) {
     console.error('Customize avatar error:', error)
-    return NextResponse.json(
-      { error: 'Failed to save customization' },
-      { status: 500 }
-    )
+    return createErrorResponse('Failed to save customization', 500)
   }
 }
 
@@ -68,17 +59,16 @@ export async function POST(request: Request) {
  */
 export async function GET() {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    // Use shared auth helper
+    const authResult = await requireAuth()
+    if (!authResult.success) {
+      return authResult.response
     }
 
+    const { userId } = authResult.session.user
+
     const character = await prisma.rPGCharacter.findUnique({
-      where: { userId: session.user.id },
+      where: { userId },
       select: {
         level: true,
         avatarConfig: true,
@@ -98,9 +88,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('Get customization error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch customization' },
-      { status: 500 }
-    )
+    return createErrorResponse('Failed to fetch customization', 500)
   }
 }

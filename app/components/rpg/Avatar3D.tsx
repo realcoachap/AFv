@@ -5,13 +5,29 @@
  * Fully interactive 3D character that evolves with stats
  */
 
-import { useRef, useMemo, Suspense } from 'react'
+import { useRef, useMemo, useEffect, useState, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
 import { getStatModifiers } from '@/app/lib/rpg/stats'
 import { parseAvatarConfig, DEFAULT_CUSTOMIZATION } from '@/app/lib/rpg/customization'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
+
+// Mobile detection hook
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+  
+  return isMobile
+}
 
 type Avatar3DProps = {
   strength: number
@@ -63,6 +79,13 @@ function AuraParticles({ intensity, color }: { intensity: number; color: string 
     geo.setAttribute('scale', new THREE.BufferAttribute(particles.scales, 1))
     return geo
   }, [particles])
+
+  // Cleanup geometry on unmount
+  useEffect(() => {
+    return () => {
+      geometry.dispose()
+    }
+  }, [geometry])
   
   return (
     <points ref={particlesRef} geometry={geometry}>
@@ -85,12 +108,14 @@ function Character3D({
   discipline,
   colorScheme,
   customization,
+  isMobile = false,
 }: {
   strength: number
   endurance: number
   discipline: number
   colorScheme: string
   customization?: AvatarCustomization
+  isMobile?: boolean
 }) {
   const groupRef = useRef<THREE.Group>(null)
   const modifiers = getStatModifiers(strength, endurance, discipline)
@@ -119,8 +144,8 @@ function Character3D({
   // Use customized skin tone
   const skinColor = config.skinTone
   
-  // Body proportions based on stats
-  const getBodyScale = () => {
+  // Body proportions based on stats - memoized to prevent recalculation
+  const body = useMemo(() => {
     const base = {
       shoulderWidth: 1.0,
       chestDepth: 1.0,
@@ -156,9 +181,7 @@ function Character3D({
       legThickness: base.legThickness * (1 + strengthBonus * 0.3) * leannessMultiplier,
       waistWidth: base.waistWidth * leannessMultiplier,
     }
-  }
-  
-  const body = getBodyScale()
+  }, [strength, endurance, modifiers.muscleTier, modifiers.leannessTier])
   
   // Aura intensity based on discipline
   const auraIntensityMap: Record<string, number> = {
@@ -168,116 +191,139 @@ function Character3D({
     none: 0,
   }
   const auraIntensity = auraIntensityMap[modifiers.auraTier] || 0
+
+  // Memoize materials for cleanup
+  const materials = useMemo(() => {
+    return {
+      skin: new THREE.MeshStandardMaterial({ color: skinColor }),
+      primary: new THREE.MeshStandardMaterial({ color: scheme.primary }),
+      secondary: new THREE.MeshStandardMaterial({ color: scheme.secondary }),
+      accent: new THREE.MeshStandardMaterial({ color: scheme.accent, emissive: scheme.accent, emissiveIntensity: 0.5 }),
+    }
+  }, [skinColor, scheme.primary, scheme.secondary, scheme.accent])
+
+  // Cleanup materials on unmount
+  useEffect(() => {
+    return () => {
+      materials.skin.dispose()
+      materials.primary.dispose()
+      materials.secondary.dispose()
+      materials.accent.dispose()
+    }
+  }, [materials])
+  
+  // Reduce particles on mobile
+  const effectiveAuraIntensity = isMobile ? auraIntensity * 0.5 : auraIntensity
   
   return (
     <group ref={groupRef} position={[0, -0.5, 0]}>
-      {/* Aura particles */}
-      <AuraParticles intensity={auraIntensity} color={scheme.accent} />
+      {/* Aura particles - reduced on mobile */}
+      <AuraParticles intensity={effectiveAuraIntensity} color={scheme.accent} />
       
       {/* Head */}
       <mesh position={[0, 2.2, 0]} castShadow>
-        <sphereGeometry args={[0.35, 32, 32]} />
-        <meshStandardMaterial color={skinColor} />
+        <sphereGeometry args={[0.35, isMobile ? 16 : 32, isMobile ? 16 : 32]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       
       {/* Eyes */}
       <mesh position={[-0.12, 2.25, 0.3]}>
-        <sphereGeometry args={[0.05, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <sphereGeometry args={[0.05, 8, 8]} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       <mesh position={[0.12, 2.25, 0.3]}>
-        <sphereGeometry args={[0.05, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <sphereGeometry args={[0.05, 8, 8]} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       
       {/* Neck */}
       <mesh position={[0, 1.85, 0]} castShadow>
-        <cylinderGeometry args={[0.15, 0.15, 0.3, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.15, 0.15, 0.3, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       
       {/* Torso (shirt) */}
       <mesh position={[0, 1.2, 0]} castShadow>
         <boxGeometry args={[0.6 * body.shoulderWidth, 0.9, 0.4 * body.chestDepth]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       
       {/* Chest accent stripe */}
       <mesh position={[0, 1.4, 0.21 * body.chestDepth]}>
         <boxGeometry args={[0.5 * body.shoulderWidth, 0.08, 0.02]} />
-        <meshStandardMaterial color={scheme.accent} emissive={scheme.accent} emissiveIntensity={0.5} />
+        <primitive object={materials.accent} attach="material" />
       </mesh>
       
       {/* Arms */}
       {/* Left shoulder */}
       <mesh position={[-0.35 * body.shoulderWidth, 1.5, 0]} castShadow>
-        <sphereGeometry args={[0.12 * body.armThickness, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <sphereGeometry args={[0.12 * body.armThickness, isMobile ? 8 : 16, isMobile ? 8 : 16]} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       {/* Left upper arm */}
       <mesh position={[-0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Left forearm */}
       <mesh position={[-0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
-        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       
       {/* Right shoulder */}
       <mesh position={[0.35 * body.shoulderWidth, 1.5, 0]} castShadow>
-        <sphereGeometry args={[0.12 * body.armThickness, 16, 16]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <sphereGeometry args={[0.12 * body.armThickness, isMobile ? 8 : 16, isMobile ? 8 : 16]} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       {/* Right upper arm */}
       <mesh position={[0.35 * body.shoulderWidth, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.08 * body.armThickness, 0.1 * body.armThickness, 0.5, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Right forearm */}
       <mesh position={[0.35 * body.shoulderWidth, 0.65, 0]} castShadow>
-        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.07 * body.armThickness, 0.06 * body.armThickness, 0.5, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       
       {/* Waist/shorts */}
       <mesh position={[0, 0.65, 0]} castShadow>
         <boxGeometry args={[0.5 * body.waistWidth, 0.4, 0.35 * body.chestDepth]} />
-        <meshStandardMaterial color={scheme.secondary} />
+        <primitive object={materials.secondary} attach="material" />
       </mesh>
       
       {/* Legs */}
       {/* Left thigh */}
       <mesh position={[-0.15, 0.2, 0]} castShadow>
-        <cylinderGeometry args={[0.12 * body.legThickness, 0.1 * body.legThickness, 0.6, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.12 * body.legThickness, 0.1 * body.legThickness, 0.6, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Left calf */}
       <mesh position={[-0.15, -0.3, 0]} castShadow>
-        <cylinderGeometry args={[0.1 * body.legThickness, 0.08 * body.legThickness, 0.6, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.1 * body.legThickness, 0.08 * body.legThickness, 0.6, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Left shoe */}
       <mesh position={[-0.15, -0.68, 0.08]} castShadow>
         <boxGeometry args={[0.15, 0.12, 0.3]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
       
       {/* Right thigh */}
       <mesh position={[0.15, 0.2, 0]} castShadow>
-        <cylinderGeometry args={[0.12 * body.legThickness, 0.1 * body.legThickness, 0.6, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.12 * body.legThickness, 0.1 * body.legThickness, 0.6, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Right calf */}
       <mesh position={[0.15, -0.3, 0]} castShadow>
-        <cylinderGeometry args={[0.1 * body.legThickness, 0.08 * body.legThickness, 0.6, 16]} />
-        <meshStandardMaterial color={skinColor} />
+        <cylinderGeometry args={[0.1 * body.legThickness, 0.08 * body.legThickness, 0.6, isMobile ? 8 : 16]} />
+        <primitive object={materials.skin} attach="material" />
       </mesh>
       {/* Right shoe */}
       <mesh position={[0.15, -0.68, 0.08]} castShadow>
         <boxGeometry args={[0.15, 0.12, 0.3]} />
-        <meshStandardMaterial color={scheme.primary} />
+        <primitive object={materials.primary} attach="material" />
       </mesh>
     </group>
   )
@@ -302,6 +348,8 @@ export default function Avatar3D({
   autoRotate = true,
   customization,
 }: Avatar3DProps) {
+  const isMobile = useIsMobile()
+  
   const sizes = {
     sm: { width: 160, height: 200 },
     md: { width: 240, height: 300 },
@@ -311,27 +359,30 @@ export default function Avatar3D({
   
   const { width, height } = sizes[size]
   
+  // Reduce shadow resolution on mobile
+  const shadowMapSize = isMobile ? 512 : 1024
+  
   return (
     <div style={{ width, height }} className="relative">
       <Canvas
         shadows
         camera={{ position: [0, 0.5, 4.5], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: !isMobile, alpha: true }}
         style={{ background: 'transparent' }}
       >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0.5, 4.5]} />
           
           {/* Lighting */}
-          <ambientLight intensity={0.6} />
+          <ambientLight intensity={isMobile ? 0.8 : 0.6} />
           <directionalLight
             position={[5, 5, 5]}
-            intensity={0.8}
+            intensity={isMobile ? 0.6 : 0.8}
             castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
+            shadow-mapSize-width={shadowMapSize}
+            shadow-mapSize-height={shadowMapSize}
           />
-          <spotLight position={[-5, 5, 5]} intensity={0.3} />
+          <spotLight position={[-5, 5, 5]} intensity={isMobile ? 0.2 : 0.3} />
           
           {/* Character */}
           <Character3D
@@ -340,6 +391,7 @@ export default function Avatar3D({
             discipline={discipline}
             colorScheme={colorScheme}
             customization={customization}
+            isMobile={isMobile}
           />
           
           {/* Ground plane (for shadows) */}
@@ -355,7 +407,7 @@ export default function Avatar3D({
             minPolarAngle={Math.PI / 3}
             maxPolarAngle={Math.PI / 2}
             autoRotate={autoRotate}
-            autoRotateSpeed={2}
+            autoRotateSpeed={isMobile ? 1 : 2}
           />
         </Suspense>
       </Canvas>

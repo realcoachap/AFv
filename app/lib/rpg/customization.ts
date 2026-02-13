@@ -121,18 +121,20 @@ export function isOptionUnlocked(requiresLevel: number | undefined, currentLevel
 }
 
 // Helper: Parse avatarConfig JSON safely
-export function parseAvatarConfig(config: any): AvatarCustomization {
+export function parseAvatarConfig(config: unknown): AvatarCustomization {
   if (!config || typeof config !== 'object') {
     return DEFAULT_CUSTOMIZATION
   }
   
+  const cfg = config as Record<string, unknown>
+  
   return {
-    skinTone: config.skinTone || DEFAULT_CUSTOMIZATION.skinTone,
-    hairStyle: config.hairStyle || DEFAULT_CUSTOMIZATION.hairStyle,
-    hairColor: config.hairColor || DEFAULT_CUSTOMIZATION.hairColor,
-    facialHair: config.facialHair || DEFAULT_CUSTOMIZATION.facialHair,
-    eyeColor: config.eyeColor || DEFAULT_CUSTOMIZATION.eyeColor,
-    outfit: config.outfit || DEFAULT_CUSTOMIZATION.outfit,
-    colorScheme: config.colorScheme || DEFAULT_CUSTOMIZATION.colorScheme,
+    skinTone: typeof cfg.skinTone === 'string' ? cfg.skinTone : DEFAULT_CUSTOMIZATION.skinTone,
+    hairStyle: typeof cfg.hairStyle === 'string' ? cfg.hairStyle : DEFAULT_CUSTOMIZATION.hairStyle,
+    hairColor: typeof cfg.hairColor === 'string' ? cfg.hairColor : DEFAULT_CUSTOMIZATION.hairColor,
+    facialHair: typeof cfg.facialHair === 'string' ? cfg.facialHair : DEFAULT_CUSTOMIZATION.facialHair,
+    eyeColor: typeof cfg.eyeColor === 'string' ? cfg.eyeColor : DEFAULT_CUSTOMIZATION.eyeColor,
+    outfit: typeof cfg.outfit === 'string' ? cfg.outfit : DEFAULT_CUSTOMIZATION.outfit,
+    colorScheme: typeof cfg.colorScheme === 'string' ? cfg.colorScheme : DEFAULT_CUSTOMIZATION.colorScheme,
   }
 }

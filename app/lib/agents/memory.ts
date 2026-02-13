@@ -25,7 +25,6 @@ export class AgentMemory {
       // For now, return default memories
       return this.getDefaultMemory(agentType)
     } catch (error) {
-      console.log(`No existing memory for ${agentType}, using defaults`)
       return this.getDefaultMemory(agentType)
     }
   }
@@ -34,7 +33,6 @@ export class AgentMemory {
    * Save memory entry for an agent
    */
   static async save(agentType: AgentType, entry: MemoryEntry): Promise<void> {
-    console.log(`💾 Saving memory for ${agentType}: ${entry.category}`)
     // In real implementation, append to agent's MEMORY.md
   }
 
@@ -209,7 +207,6 @@ export class AgentMemory {
    * Clear all memory for an agent
    */
   static async clear(agentType: AgentType): Promise<void> {
-    console.log(`🗑️ Clearing memory for ${agentType}`)
     // In real implementation, delete or reset MEMORY.md
   }
 
@@ -217,7 +214,6 @@ export class AgentMemory {
    * Import memory from string (for initialization)
    */
   static async import(agentType: AgentType, memoryContent: string): Promise<void> {
-    console.log(`📥 Importing memory for ${agentType}`)
     // In real implementation, write to MEMORY.md
   }
 }

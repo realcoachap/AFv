@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
+import { rateLimitRegister } from '@/lib/rate-limiter'
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -16,6 +17,16 @@ const registerSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // Apply rate limiting
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    const realIp = request.headers.get('x-real-ip')
+    const identifier = forwardedFor?.split(',')[0]?.trim() || realIp || 'anonymous'
+    
+    const rateLimitResult = await rateLimitRegister(identifier)
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response!
+    }
+
     const body = await request.json()
     const validatedData = registerSchema.parse(body)
 

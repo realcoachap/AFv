@@ -29,17 +29,15 @@ export default function AvatarCreatorPage() {
         switch (data.eventName) {
           case 'v1.avatar.exported':
             // Avatar was created/extracted
-            console.log('Avatar exported:', data.data)
             setAvatarUrl(data.data.url)
             // Save to your database here
             saveAvatar(data.data.url, data.data.avatarId)
             break
-            
+
           case 'v1.avatar.created':
             // New avatar created
-            console.log('Avatar created:', data.data)
             break
-            
+
           case 'v1.frame.ready':
             setIsLoading(false)
             break

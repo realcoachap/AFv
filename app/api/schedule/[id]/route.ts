@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { onSessionComplete } from '@/app/lib/rpg/session-integration'
+import { Prisma } from '@prisma/client'
 
 /**
  * GET /api/schedule/[id]
@@ -136,7 +137,7 @@ export async function PUT(
     }
 
     // If marking as cancelled, set cancelledAt
-    const updateData: any = { ...validatedData }
+    const updateData: Prisma.AppointmentUpdateInput = { ...validatedData }
     if (
       validatedData.status === 'CANCELLED' &&
       !existing.cancelledAt

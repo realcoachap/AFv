@@ -252,7 +252,7 @@ export default function ShareCard({
           url: window.location.origin,
         })
       } catch (err) {
-        console.log('Share cancelled')
+        // Share cancelled
       }
     } else {
       navigator.clipboard.writeText(text)

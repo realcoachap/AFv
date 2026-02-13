@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { requireAdmin, createErrorResponse, createSuccessResponse } from '@/app/lib/api-auth'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/admin/clients - Get all clients (admin only)
 export async function GET(request: Request) {
   try {
-    const session = await auth()
-
-    if (!session?.user || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    // Use shared auth helper
+    const authResult = await requireAdmin()
+    if (!authResult.success) {
+      return authResult.response
     }
 
     // Get search params
@@ -110,9 +107,6 @@ export async function GET(request: Request) {
     )
   } catch (error) {
     console.error('Get clients error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch clients' },
-      { status: 500 }
-    )
+    return createErrorResponse('Failed to fetch clients', 500)
   }
 }

@@ -7,7 +7,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import RPMAvatarViewer from '@/app/components/rpg/RPMAvatarViewer'
 import NavBar from '@/app/components/NavBar'
 
 // RPM Subdomain - you need to create this at https://studio.readyplayer.me

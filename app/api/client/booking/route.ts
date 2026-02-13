@@ -70,13 +70,6 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    console.log('📅 New booking request:', {
-      appointmentId: appointment.id,
-      client: appointment.client.clientProfile?.fullName || appointment.client.email,
-      dateTime: appointment.dateTime,
-      status: appointment.status,
-    })
-
     return NextResponse.json({ appointment }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {

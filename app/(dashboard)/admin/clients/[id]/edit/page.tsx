@@ -74,10 +74,9 @@ export default function AdminEditClientProfilePage() {
       if (response.ok) {
         const data = await response.json()
         const profile = data.client.clientProfile
-        
-        console.log('📋 Loaded client profile, phone:', profile?.phone)
+
         setClientName(profile?.fullName || data.client.email)
-        
+
         if (profile) {
           setFormData({
             fullName: profile.fullName || '',
@@ -128,14 +127,14 @@ export default function AdminEditClientProfilePage() {
     e.preventDefault()
     setError('')
     setValidationErrors({})
-    
+
     const validation = validateProfile(formData)
     if (!validation.success) {
       setValidationErrors(validation.errors)
       setError('Please fix the validation errors below')
       return
     }
-    
+
     setSaving(true)
 
     try {

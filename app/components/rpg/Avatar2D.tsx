@@ -3,9 +3,13 @@
 /**
  * SVG Avatar Component - Modern Gym Aesthetic
  * Renders customizable avatar that evolves with stats
+ * 
+ * REFACTORED: Now uses shared utilities from @/app/lib/rpg/avatar-helpers
  */
 
 import { getStatModifiers } from '@/app/lib/rpg/stats'
+import { calculateSVGBodyProportions, getColorScheme } from '@/app/lib/rpg/avatar-helpers'
+import type { AvatarSize } from '@/app/lib/rpg/avatar-helpers'
 
 type AvatarProps = {
   strength: number
@@ -34,70 +38,11 @@ export default function Avatar({
 
   const { width, height } = sizes[size]
 
-  // Color schemes
-  const colors = {
-    navy: {
-      primary: '#1A2332',
-      secondary: '#E8DCC4',
-      accent: '#00D9FF',
-    },
-    black: {
-      primary: '#000000',
-      secondary: '#FFFFFF',
-      accent: '#FF0000',
-    },
-    red: {
-      primary: '#DC2626',
-      secondary: '#FEE2E2',
-      accent: '#991B1B',
-    },
-    blue: {
-      primary: '#2563EB',
-      secondary: '#DBEAFE',
-      accent: '#1E40AF',
-    },
-  }
+  // Use shared color scheme
+  const scheme = getColorScheme(colorScheme)
 
-  const scheme = colors[colorScheme as keyof typeof colors] || colors.navy
-
-  // Body proportions based on stats
-  const getBodyProportions = () => {
-    const base = {
-      shoulderWidth: 40,
-      chestWidth: 35,
-      waistWidth: 28,
-      armThickness: 6,
-      legThickness: 8,
-    }
-
-    // Strength increases bulk
-    if (modifiers.muscleTier === 'huge') {
-      return {
-        shoulderWidth: 50,
-        chestWidth: 45,
-        waistWidth: 32,
-        armThickness: 10,
-        legThickness: 11,
-      }
-    } else if (modifiers.muscleTier === 'muscular') {
-      return {
-        shoulderWidth: 46,
-        chestWidth: 42,
-        waistWidth: 30,
-        armThickness: 9,
-        legThickness: 10,
-      }
-    } else if (modifiers.muscleTier === 'defined') {
-      return {
-        shoulderWidth: 43,
-        chestWidth: 38,
-        waistWidth: 29,
-        armThickness: 7,
-        legThickness: 9,
-      }
-    }
-
-    // Endurance makes leaner
+  // Use shared body proportions calculation
+  const body = calculateSVGBodyProportions(strength, endurance)
     if (modifiers.leannessTier === 'shredded') {
       return {
         shoulderWidth: 38,

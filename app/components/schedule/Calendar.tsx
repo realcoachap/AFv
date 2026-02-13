@@ -7,6 +7,30 @@ import { useState } from 'react'
 
 const localizer = momentLocalizer(moment)
 
+// Client profile from Prisma relation
+interface ClientProfile {
+  fullName: string
+  phone?: string
+}
+
+// Client data from Prisma relation
+interface ClientData {
+  id?: string
+  email: string
+  clientProfile?: ClientProfile | null
+}
+
+// Appointment with client relation from API
+interface AppointmentWithClient {
+  id: string
+  dateTime: string
+  duration: number
+  sessionType: string
+  location: string | null
+  status: string
+  client?: ClientData
+}
+
 interface CalendarEvent {
   id: string
   title: string
@@ -22,7 +46,7 @@ interface CalendarEvent {
 }
 
 interface CalendarProps {
-  appointments: any[]
+  appointments: AppointmentWithClient[]
   onSelectEvent?: (event: CalendarEvent) => void
   onSelectSlot?: (slotInfo: { start: Date; end: Date }) => void
   isAdmin?: boolean

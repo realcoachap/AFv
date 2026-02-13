@@ -6,9 +6,8 @@
  * Using a simpler approach for POC
  */
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import AvatarWithAITextures from '../../../../components/rpg/AvatarWithAITextures'
 import NavBar from '../../../../components/NavBar'
 
 interface GeneratedTexture {
@@ -253,15 +252,8 @@ export default function AITexturePipelinePage() {
                   <div>
                     <p className="text-gray-400 text-sm mb-2">AI Enhanced Avatar</p>
                     {showAvatar ? (
-                      <div className="aspect-square bg-gray-900 rounded-xl overflow-hidden">
-                        <AvatarWithAITextures
-                          diffuseTextureUrl={uploadedPhoto}
-                          strength={75}
-                          endurance={60}
-                          level={12}
-                          size="lg"
-                          autoRotate={true}
-                        />
+                      <div className="aspect-square bg-gray-900 rounded-xl flex items-center justify-center">
+                        <p className="text-gray-400">Avatar Component Removed</p>
                       </div>
                     ) : (
                       <div className="aspect-square bg-gray-900 rounded-xl flex items-center justify-center">

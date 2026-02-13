@@ -14,8 +14,8 @@ interface Client {
 }
 
 // Generate time options in 30-minute increments
-function generateTimeOptions() {
-  const times = []
+function generateTimeOptions(): { value: string; label: string }[] {
+  const times: { value: string; label: string }[] = []
   for (let hour = 0; hour < 24; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
       const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
@@ -65,10 +65,6 @@ export default function NewSessionPage() {
       })
       if (response.ok) {
         const data = await response.json()
-        console.log('📋 Loaded clients:', data.clients.length)
-        data.clients.forEach((c: any) => {
-          console.log(`  - ${c.clientProfile?.fullName}: phone=${c.clientProfile?.phone}`)
-        })
         setClients(data.clients)
       }
     } catch (error) {
