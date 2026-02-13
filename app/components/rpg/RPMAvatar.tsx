@@ -106,6 +106,8 @@ export default function RPMAvatar({
 
   useEffect(() => {
     // Subscribe to RPM events
+    if (typeof window === 'undefined') return
+    
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.source === 'readyplayerme') {
         switch (event.data.eventName) {
