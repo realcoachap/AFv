@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return authResult.response
     }
 
-    const { userId } = authResult.session.user
+    const userId = authResult.session.user.id
     const body = await request.json()
     const customization: Partial<AvatarCustomization> = body
 
@@ -65,7 +65,7 @@ export async function GET() {
       return authResult.response
     }
 
-    const { userId } = authResult.session.user
+    const userId = authResult.session.user.id
 
     const character = await prisma.rPGCharacter.findUnique({
       where: { userId },
