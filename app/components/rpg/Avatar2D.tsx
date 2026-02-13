@@ -43,6 +43,9 @@ export default function Avatar({
 
   // Use shared body proportions calculation
   const body = calculateSVGBodyProportions(strength, endurance)
+  
+  // Apply leanness modifiers to body proportions
+  const getBodyProportions = () => {
     if (modifiers.leannessTier === 'shredded') {
       return {
         shoulderWidth: 38,
@@ -58,6 +61,12 @@ export default function Avatar({
         waistWidth: 26,
         armThickness: 6,
         legThickness: 8,
+      }
+    }
+    return body
+  }
+
+  const finalBody = getBodyProportions()
       }
     }
 
@@ -160,12 +169,12 @@ export default function Avatar({
         {/* Torso (shirt) */}
         <path
           d={`
-            M ${width / 2 - body.shoulderWidth / 2} 80
-            L ${width / 2 + body.shoulderWidth / 2} 80
-            L ${width / 2 + body.chestWidth / 2} 120
-            L ${width / 2 + body.waistWidth / 2} 145
-            L ${width / 2 - body.waistWidth / 2} 145
-            L ${width / 2 - body.chestWidth / 2} 120
+            M ${width / 2 - finalBody.shoulderWidth / 2} 80
+            L ${width / 2 + finalBody.shoulderWidth / 2} 80
+            L ${width / 2 + finalBody.chestWidth / 2} 120
+            L ${width / 2 + finalBody.waistWidth / 2} 145
+            L ${width / 2 - finalBody.waistWidth / 2} 145
+            L ${width / 2 - finalBody.chestWidth / 2} 120
             Z
           `}
           fill={scheme.primary}
@@ -176,8 +185,8 @@ export default function Avatar({
         {/* Accent line on shirt */}
         <path
           d={`
-            M ${width / 2 - body.chestWidth / 2 + 5} 100
-            L ${width / 2 + body.chestWidth / 2 - 5} 100
+            M ${width / 2 - finalBody.chestWidth / 2 + 5} 100
+            L ${width / 2 + finalBody.chestWidth / 2 - 5} 100
           `}
           stroke={scheme.accent}
           strokeWidth="2"
@@ -187,32 +196,32 @@ export default function Avatar({
         {/* Arms */}
         {/* Left arm */}
         <rect
-          x={width / 2 - body.shoulderWidth / 2 - body.armThickness}
+          x={width / 2 - finalBody.shoulderWidth / 2 - finalBody.armThickness}
           y={85}
-          width={body.armThickness}
+          width={finalBody.armThickness}
           height={50}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={body.armThickness / 2}
+          rx={finalBody.armThickness / 2}
         />
         {/* Right arm */}
         <rect
-          x={width / 2 + body.shoulderWidth / 2}
+          x={width / 2 + finalBody.shoulderWidth / 2}
           y={85}
-          width={body.armThickness}
+          width={finalBody.armThickness}
           height={50}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={body.armThickness / 2}
+          rx={finalBody.armThickness / 2}
         />
 
         {/* Shorts/Pants */}
         <rect
-          x={width / 2 - body.waistWidth / 2}
+          x={width / 2 - finalBody.waistWidth / 2}
           y={145}
-          width={body.waistWidth}
+          width={finalBody.waistWidth}
           height={35}
           fill={scheme.secondary}
           stroke={scheme.primary}
@@ -222,39 +231,39 @@ export default function Avatar({
         {/* Legs */}
         {/* Left leg */}
         <rect
-          x={width / 2 - body.waistWidth / 2 + 2}
+          x={width / 2 - finalBody.waistWidth / 2 + 2}
           y={178}
-          width={body.legThickness}
+          width={finalBody.legThickness}
           height={45}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={body.legThickness / 2}
+          rx={finalBody.legThickness / 2}
         />
         {/* Right leg */}
         <rect
-          x={width / 2 + body.waistWidth / 2 - body.legThickness - 2}
+          x={width / 2 + finalBody.waistWidth / 2 - finalBody.legThickness - 2}
           y={178}
-          width={body.legThickness}
+          width={finalBody.legThickness}
           height={45}
           fill="#F0D0B0"
           stroke={scheme.primary}
           strokeWidth="1"
-          rx={body.legThickness / 2}
+          rx={finalBody.legThickness / 2}
         />
 
         {/* Shoes */}
         <ellipse
-          cx={width / 2 - body.waistWidth / 2 + 2 + body.legThickness / 2}
+          cx={width / 2 - finalBody.waistWidth / 2 + 2 + finalBody.legThickness / 2}
           cy={230}
-          rx={body.legThickness + 2}
+          rx={finalBody.legThickness + 2}
           ry={6}
           fill={scheme.primary}
         />
         <ellipse
-          cx={width / 2 + body.waistWidth / 2 - body.legThickness / 2 - 2}
+          cx={width / 2 + finalBody.waistWidth / 2 - finalBody.legThickness / 2 - 2}
           cy={230}
-          rx={body.legThickness + 2}
+          rx={finalBody.legThickness + 2}
           ry={6}
           fill={scheme.primary}
         />
