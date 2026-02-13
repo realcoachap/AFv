@@ -6,7 +6,7 @@
  * Using a simpler approach for POC
  */
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import NavBar from '../../../../components/NavBar'
 
