@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import Link from 'next/link'
+import type { ReactElement } from 'react'
 
 // Map of document IDs to files
 const docMap: Record<string, { title: string; file: string }> = {
@@ -16,10 +17,10 @@ const docMap: Record<string, { title: string; file: string }> = {
   'nutrition-guidance': { title: 'Nutrition Guidance Systems', file: 'nutrition-guidance-systems.md' },
 }
 
-function parseMarkdown(content: string) {
+function parseMarkdown(content: string): ReactElement[] {
   // Simple markdown parsing for display
   const lines = content.split('\n')
-  const elements: JSX.Element[] = []
+  const elements: ReactElement[] = []
   let key = 0
   
   for (const line of lines) {
