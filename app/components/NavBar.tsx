@@ -17,6 +17,7 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const dashboardLink = role === 'admin' ? '/admin/dashboard' : '/client/dashboard'
 
+  /* RPG Features - Hidden temporarily
   const rpgLinks = [
     { label: '🆕 Avatar V4', href: '/client/rpg/avatars/v4' },
     { label: '🧪 Enhancement Lab', href: '/client/rpg/avatar-lab' },
@@ -29,6 +30,7 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
     { label: '📸 Share Cards', href: '/client/rpg/share-cards' },
     { label: '🔄 RPM Creator', href: '/client/rpg/avatar-creator-rpm' },
   ]
+  */
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/login' })
@@ -50,7 +52,7 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
                 📚 Resources
               </Link>
 
-              {/* RPG Features Dropdown */}
+              {/* RPG Features Dropdown - Hidden temporarily
               <div className="relative">
                 <button 
                   onClick={() => setIsOpen(!isOpen)}
@@ -77,11 +79,12 @@ export default function NavBar({ role, backLink, backText }: NavBarProps) {
                   </div>
                 )}
               </div>
+              */}
 
-              <Link href="/client/profile" className="text-gray-300 hover:text-white hidden sm:block">
+              <Link href="/client/profile" className="text-gray-300 hover:text-white">
                 Profile
               </Link>
-              <Link href="/client/schedule" className="text-gray-300 hover:text-white hidden sm:block">
+              <Link href="/client/schedule" className="text-gray-300 hover:text-white">
                 Schedule
               </Link>
             </>
