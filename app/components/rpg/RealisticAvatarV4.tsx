@@ -11,7 +11,6 @@
 import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import type { AvatarCustomization } from '@/app/lib/rpg/customization'
 import { 
@@ -626,17 +625,7 @@ export default function RealisticAvatarV4({
           resolution={isMobile ? 128 : 256}
         />
         
-        {/* Post-Processing - SIMPLIFIED to prevent crashes */}
-        {!isMobile && (
-          <EffectComposer>
-            <Bloom 
-              intensity={0.06}
-              luminanceThreshold={0.92}
-              luminanceSmoothing={0.4}
-              height={300}
-            />
-          </EffectComposer>
-        )}
+        {/* Post-processing disabled - caused crashes */}
         
         <OrbitControls
           enableZoom={false}
